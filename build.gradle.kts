@@ -49,7 +49,18 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
+openApiGenerate {
+    generatorName.set("kotlin-spring")
+    inputSpec.set("$rootDir/src/main/resources/static/api/open-api.yml")
+    outputDir.set("$buildDir/generated/")
+    configFile.set("$rootDir/src/main/resources/api-config.json")
+    apiPackage.set("com.udemy.groceryshoppingapi.apis")
+    modelPackage.set("com.udemy.groceryshoppingapi.models")
+    configOptions.set(mapOf("useSpringBoot3" to "true"))
+}
+
 tasks.withType<KotlinCompile> {
+    dependsOn("openApiGenerate")
     kotlinOptions {
         freeCompilerArgs += "-Xjsr305=strict"
         jvmTarget = "17"
