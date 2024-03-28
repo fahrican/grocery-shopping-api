@@ -52,11 +52,16 @@ dependencies {
 openApiGenerate {
     generatorName.set("kotlin-spring")
     inputSpec.set("$rootDir/src/main/resources/static/api/open-api.yml")
-    outputDir.set("$buildDir/generated/")
     configFile.set("$rootDir/src/main/resources/api-config.json")
     apiPackage.set("com.udemy.groceryshoppingapi.apis")
     modelPackage.set("com.udemy.groceryshoppingapi.models")
     configOptions.set(mapOf("useSpringBoot3" to "true"))
+}
+
+configure<SourceSetContainer> {
+    named("main") {
+        java.srcDir("build/generate-resources/main/src/main/kotlin")
+    }
 }
 
 tasks.withType<KotlinCompile> {
