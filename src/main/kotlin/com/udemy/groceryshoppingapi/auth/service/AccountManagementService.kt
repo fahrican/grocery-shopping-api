@@ -1,9 +1,9 @@
 package com.udemy.groceryshoppingapi.auth.service
 
-import com.udemy.groceryshoppingapi.models.AuthenticationRequest
-import com.udemy.groceryshoppingapi.models.AuthenticationResponse
-import com.udemy.groceryshoppingapi.models.EmailConfirmedResponse
-import com.udemy.groceryshoppingapi.models.RegisterRequest
+import com.udemy.groceryshoppingapi.dto.AuthenticationRequest
+import com.udemy.groceryshoppingapi.dto.AuthenticationResponse
+import com.udemy.groceryshoppingapi.dto.EmailConfirmedResponse
+import com.udemy.groceryshoppingapi.dto.RegisterRequest
 
 
 interface AccountManagementService {
