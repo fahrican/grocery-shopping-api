@@ -16,110 +16,6 @@ servers:
 security:
   - BearerAuth: [ ]
 paths:
-  /api/v1/auth/sign-up:
-    post:
-      tags:
-        - authentication-resource
-      summary: sign-up user
-      operationId: signUp
-      description: methods to sign-up user or inform about sign-up problems
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterRequest'
-        required: true
-      responses:
-        '201':
-          description: sign-up was successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmailConfirmedResponse'
-        '409':
-          description: Invalid sign-up
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-  /api/v1/auth/sign-in:
-    post:
-      tags:
-        - authentication-resource
-      summary: sign-in user
-      operationId: signIn
-      description: methods to sign-in user or inform about sign-in problems
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AuthenticationRequest'
-        required: true
-      responses:
-        '200':
-          description: sign-in was successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthenticationResponse'
-        '401':
-          description: Invalid sign-in
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-  /api/v1/auth/password-reset:
-    post:
-      tags:
-        - authentication-resource
-      summary: reset user password
-      operationId: requestPasswordReset
-      description: methods to reset user password or inform about reset problems
-      parameters:
-        - name: email
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: resetting password was successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmailConfirmedResponse'
-        '401':
-          description: Couldn't reset password
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
-  /api/v1/auth/verify:
-    get:
-      tags:
-        - authentication-resource
-      summary: verify user
-      operationId: verifyUser
-      description: methods to verify user or inform about verification problem
-      parameters:
-        - name: token
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: email verification was successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EmailConfirmedResponse'
-        '403':
-          description: Verification step not complete
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
   /api/v1/user/username:
     patch:
       tags:
@@ -224,6 +120,110 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserInfoResponse'
+  /api/v1/auth/sign-up:
+    post:
+      tags:
+        - authentication-resource
+      summary: sign-up user
+      operationId: signUp
+      description: methods to sign-up user or inform about sign-up problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      responses:
+        '201':
+          description: sign-up was successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailConfirmedResponse'
+        '409':
+          description: Invalid sign-up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/v1/auth/sign-in:
+    post:
+      tags:
+        - authentication-resource
+      summary: sign-in user
+      operationId: signIn
+      description: methods to sign-in user or inform about sign-in problems
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequest'
+        required: true
+      responses:
+        '200':
+          description: sign-in was successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+        '401':
+          description: Invalid sign-in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/v1/auth/password-reset:
+    post:
+      tags:
+        - authentication-resource
+      summary: reset user password
+      operationId: requestPasswordReset
+      description: methods to reset user password or inform about reset problems
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: resetting password was successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailConfirmedResponse'
+        '401':
+          description: Couldn't reset password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/v1/auth/verify:
+    get:
+      tags:
+        - authentication-resource
+      summary: verify user
+      operationId: verifyUser
+      description: methods to verify user or inform about verification problem
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: email verification was successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailConfirmedResponse'
+        '403':
+          description: Verification step not complete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
 
 components:
   schemas:
