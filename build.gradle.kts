@@ -53,8 +53,8 @@ openApiGenerate {
     generatorName.set("kotlin-spring")
     inputSpec.set("$rootDir/src/main/resources/static/api/open-api.yml")
     configFile.set("$rootDir/src/main/resources/api-config.json")
-    apiPackage.set("com.udemy.groceryshoppingapi.apis")
-    modelPackage.set("com.udemy.groceryshoppingapi.models")
+    apiPackage.set("com.udemy.groceryshoppingapi.api")
+    modelPackage.set("com.udemy.groceryshoppingapi.dto")
     configOptions.set(mapOf("useSpringBoot3" to "true"))
 }
 
