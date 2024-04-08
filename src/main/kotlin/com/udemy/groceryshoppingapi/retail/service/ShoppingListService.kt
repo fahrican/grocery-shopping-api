@@ -2,6 +2,7 @@ package com.udemy.groceryshoppingapi.retail.service
 
 import com.udemy.groceryshoppingapi.retail.dto.ShoppingListCreateRequest
 import com.udemy.groceryshoppingapi.retail.dto.ShoppingListResponse
+import com.udemy.groceryshoppingapi.retail.dto.ShoppingListUpdateRequest
 import com.udemy.groceryshoppingapi.user.entity.AppUser
 
 interface ShoppingListService {

@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
 
@@ -30,5 +31,8 @@ class ShoppingList(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supermarket_id")
-    var supermarket: Supermarket? = null
+    var supermarket: Supermarket? = null,
+
+    @OneToMany(mappedBy = "shoppingList", fetch = FetchType.LAZY)
+    var shoppingListItems: List<ShoppingListItem> = emptyList()
 )
