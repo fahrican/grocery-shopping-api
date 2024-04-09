@@ -4,7 +4,6 @@ import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
 import com.udemy.groceryshoppingapi.retail.entity.Supermarket
 
 data class ShoppingListCreateRequest(
-    var totalAmount: Float? = null,
     var receiptPictureUrl: String? = null,
     var supermarket: Supermarket,
     val shoppingListItems: List<ShoppingListItem>

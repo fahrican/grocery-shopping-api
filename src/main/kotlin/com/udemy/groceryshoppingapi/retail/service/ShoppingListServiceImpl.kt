@@ -15,10 +15,8 @@ class ShoppingListServiceImpl(
     private val mapper: ShoppingListMapper
 ) : ShoppingListService {
     override fun createShoppingList(createRequest: ShoppingListCreateRequest, appUser: AppUser): ShoppingListResponse {
-        createRequest.totalAmount?.let {
-            if (it <= 0) {
-                throw BadRequestException("Total amount must be greater than 0.00 €")
-            }
+        if (createRequest.shoppingListItems.isEmpty()) {
+            throw BadRequestException("A shopping list must have at least one item")
         }
         val shoppingList = mapper.toEntity(createRequest, appUser)
         val entity = repository.save(shoppingList)

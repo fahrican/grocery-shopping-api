@@ -12,7 +12,7 @@ class ShoppingListMapper {
     fun toDto(entity: ShoppingList): ShoppingListResponse {
         return ShoppingListResponse(
             id = entity.id,
-            totalAmount = entity.totalAmount,
+            totalAmount = entity.getTotalAmount(),
             receiptPictureUrl = entity.receiptPictureUrl,
             supermarket = entity.supermarket,
             shoppingListItems = entity.shoppingListItems
@@ -21,7 +21,6 @@ class ShoppingListMapper {
 
     fun toEntity(dto: ShoppingListCreateRequest, appUser: AppUser): ShoppingList {
         val entity = ShoppingList()
-        entity.totalAmount = dto.totalAmount ?: 0.0f
         entity.receiptPictureUrl = dto.receiptPictureUrl
         entity.supermarket = dto.supermarket
         entity.shoppingListItems = dto.shoppingListItems

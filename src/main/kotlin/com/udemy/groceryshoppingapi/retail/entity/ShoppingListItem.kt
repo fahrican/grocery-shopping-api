@@ -25,6 +25,8 @@ class ShoppingListItem(
 
     val quantity: Int = 0,
 
+    val price: Float = 0.0F,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shopping_list_id")
     var shoppingList: ShoppingList? = null,

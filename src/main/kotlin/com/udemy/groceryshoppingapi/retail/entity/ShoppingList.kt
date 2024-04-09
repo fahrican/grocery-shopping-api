@@ -21,8 +21,6 @@ class ShoppingList(
     @SequenceGenerator(name = "shopping_list_id_seq", sequenceName = "shopping_list_id_seq", allocationSize = 1)
     val id: Long = 0,
 
-    var totalAmount: Float = 0f,
-
     var receiptPictureUrl: String? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,4 +33,10 @@ class ShoppingList(
 
     @OneToMany(mappedBy = "shoppingList", fetch = FetchType.LAZY)
     var shoppingListItems: List<ShoppingListItem> = emptyList()
-)
+) {
+    fun getTotalAmount(): Float {
+        var totalAmount = 0f
+        shoppingListItems.forEach { item -> totalAmount += item.price }
+        return totalAmount
+    }
+}
