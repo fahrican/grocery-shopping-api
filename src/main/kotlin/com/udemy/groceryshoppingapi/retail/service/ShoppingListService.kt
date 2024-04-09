@@ -9,11 +9,11 @@ interface ShoppingListService {
 
     fun createShoppingList(createRequest: ShoppingListCreateRequest, appUser: AppUser): ShoppingListResponse
 
-    fun getShoppingLists(appUser: AppUser): Set<ShoppingListResponse>
-
     fun getShoppingListById(id: Long, appUser: AppUser): ShoppingListResponse
+
+    fun getShoppingLists(appUser: AppUser): Set<ShoppingListResponse>
 
     fun updateShoppingList(id: Long, updateRequest: ShoppingListUpdateRequest, appUser: AppUser): ShoppingListResponse
 
-    fun deleteShoppingList(id: Long, appUser: AppUser): String
+    fun deleteShoppingList(id: Long, appUser: AppUser)
 }

@@ -1,9 +1,11 @@
 package com.udemy.groceryshoppingapi.retail.service
 
 import com.udemy.groceryshoppingapi.error.BadRequestException
+import com.udemy.groceryshoppingapi.error.ShoppingListNotFoundException
 import com.udemy.groceryshoppingapi.retail.dto.ShoppingListCreateRequest
 import com.udemy.groceryshoppingapi.retail.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.retail.dto.ShoppingListUpdateRequest
+import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.repository.ShoppingListRepository
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListMapper
 import com.udemy.groceryshoppingapi.user.entity.AppUser
@@ -23,12 +25,14 @@ class ShoppingListServiceImpl(
         return mapper.toDto(entity)
     }
 
-    override fun getShoppingLists(appUser: AppUser): Set<ShoppingListResponse> {
-        TODO("Not yet implemented")
+    override fun getShoppingListById(id: Long, appUser: AppUser): ShoppingListResponse {
+        val shoppingList: ShoppingList = validateShoppingList(id)
+        return mapper.toDto(shoppingList)
     }
 
-    override fun getShoppingListById(id: Long, appUser: AppUser): ShoppingListResponse {
-        TODO("Not yet implemented")
+    override fun getShoppingLists(appUser: AppUser): Set<ShoppingListResponse> {
+        val shoppingLists = repository.findAllByAppUser(appUser)
+        return shoppingLists.map { mapper.toDto(it) }.toSet()
     }
 
     override fun updateShoppingList(
@@ -36,10 +40,26 @@ class ShoppingListServiceImpl(
         updateRequest: ShoppingListUpdateRequest,
         appUser: AppUser
     ): ShoppingListResponse {
-        TODO("Not yet implemented")
+        val shoppingList: ShoppingList = validateShoppingList(id)
+        shoppingList.apply {
+            this.receiptPictureUrl = updateRequest.receiptPictureUrl ?: receiptPictureUrl
+            this.supermarket = updateRequest.supermarket ?: supermarket
+            this.shoppingListItems = updateRequest.shoppingListItems ?: shoppingListItems
+        }
+        val entity = repository.save(shoppingList)
+        return mapper.toDto(entity)
     }
 
-    override fun deleteShoppingList(id: Long, appUser: AppUser): String {
-        TODO("Not yet implemented")
+    override fun deleteShoppingList(id: Long, appUser: AppUser) {
+        val shoppingList: ShoppingList = validateShoppingList(id)
+        repository.delete(shoppingList)
+    }
+
+    private fun validateShoppingList(id: Long): ShoppingList {
+        if (!repository.existsById(id)) {
+            throw ShoppingListNotFoundException(message = "Task with ID: $id does not exist!")
+        }
+        val shoppingList: ShoppingList = repository.findById(id).get()
+        return shoppingList
     }
 }
