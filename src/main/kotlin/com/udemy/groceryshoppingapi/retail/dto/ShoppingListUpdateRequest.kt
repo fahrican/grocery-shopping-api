@@ -6,6 +6,7 @@ import com.udemy.groceryshoppingapi.retail.entity.Supermarket
 data class ShoppingListUpdateRequest(
     var totalAmount: Float?,
     var receiptPictureUrl: String?,
+    var isDone: Boolean?,
     var supermarket: Supermarket?,
     val shoppingListItems: List<ShoppingListItem>?
 )

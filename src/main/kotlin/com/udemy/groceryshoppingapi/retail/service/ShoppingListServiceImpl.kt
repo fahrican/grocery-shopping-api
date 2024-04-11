@@ -26,13 +26,13 @@ class ShoppingListServiceImpl(
     }
 
     override fun getShoppingListById(id: Long, appUser: AppUser): ShoppingListResponse {
-        val shoppingList: ShoppingList = validateShoppingList(id)
+        val shoppingList: ShoppingList = validateShoppingList(id, appUser)
         return mapper.toDto(shoppingList)
     }
 
     override fun getShoppingLists(appUser: AppUser): Set<ShoppingListResponse> {
         val shoppingLists = repository.findAllByAppUser(appUser)
-        return shoppingLists.map { mapper.toDto(it) }.toSet()
+        return shoppingLists?.map { mapper.toDto(it) }?.toSet() ?: emptySet()
     }
 
     override fun updateShoppingList(
@@ -40,7 +40,7 @@ class ShoppingListServiceImpl(
         updateRequest: ShoppingListUpdateRequest,
         appUser: AppUser
     ): ShoppingListResponse {
-        val shoppingList: ShoppingList = validateShoppingList(id)
+        val shoppingList: ShoppingList = validateShoppingList(id, appUser)
         shoppingList.apply {
             this.receiptPictureUrl = updateRequest.receiptPictureUrl ?: receiptPictureUrl
             this.supermarket = updateRequest.supermarket ?: supermarket
@@ -51,15 +51,13 @@ class ShoppingListServiceImpl(
     }
 
     override fun deleteShoppingList(id: Long, appUser: AppUser) {
-        val shoppingList: ShoppingList = validateShoppingList(id)
-        repository.delete(shoppingList)
+        validateShoppingList(id, appUser)
+        repository.deleteById(id)
     }
 
-    private fun validateShoppingList(id: Long): ShoppingList {
-        if (!repository.existsById(id)) {
-            throw ShoppingListNotFoundException(message = "Task with ID: $id does not exist!")
-        }
-        val shoppingList: ShoppingList = repository.findById(id).get()
+    private fun validateShoppingList(id: Long, appUser: AppUser): ShoppingList {
+        val shoppingList = repository.findByIdAndAppUser(id, appUser)
+            ?: throw ShoppingListNotFoundException(message = "Task with ID: $id does not exist!")
         return shoppingList
     }
 }

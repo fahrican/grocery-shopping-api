@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ShoppingListRepository : JpaRepository<ShoppingList, Long> {
 
-    fun findAllByAppUser(appUser: AppUser): List<ShoppingList>
+    fun findAllByAppUser(appUser: AppUser): List<ShoppingList>?
+
+    fun findByIdAndAppUser(id: Long, appUser: AppUser): ShoppingList?
 }

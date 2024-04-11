@@ -5,8 +5,9 @@ import com.udemy.groceryshoppingapi.retail.entity.Supermarket
 
 data class ShoppingListResponse(
     val id: Long,
-    var totalAmount: Float?,
     var receiptPictureUrl: String? = null,
+    var isDone: Boolean = false,
     var supermarket: Supermarket? = null,
-    val shoppingListItems: List<ShoppingListItem>
+    val shoppingListItems: List<ShoppingListItem>,
+    var totalAmount: Float? = null,
 )

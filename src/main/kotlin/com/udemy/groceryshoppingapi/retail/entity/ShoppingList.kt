@@ -23,6 +23,8 @@ class ShoppingList(
 
     var receiptPictureUrl: String? = null,
 
+    var isDone: Boolean = false,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "app_user_id")
     var appUser: AppUser? = null,
