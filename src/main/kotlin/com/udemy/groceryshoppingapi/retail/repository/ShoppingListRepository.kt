@@ -11,4 +11,6 @@ interface ShoppingListRepository : JpaRepository<ShoppingList, Long> {
     fun findAllByAppUser(appUser: AppUser): List<ShoppingList>?
 
     fun findByIdAndAppUser(id: Long, appUser: AppUser): ShoppingList?
+
+    fun findAllByAppUserAndDoneIs(appUser: AppUser, isDone: Boolean): List<ShoppingList>?
 }

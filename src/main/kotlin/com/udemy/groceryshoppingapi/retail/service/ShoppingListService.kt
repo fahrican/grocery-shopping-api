@@ -11,7 +11,7 @@ interface ShoppingListService {
 
     fun getShoppingListById(id: Long, appUser: AppUser): ShoppingListResponse
 
-    fun getShoppingLists(appUser: AppUser): Set<ShoppingListResponse>
+    fun getShoppingLists(appUser: AppUser, isDone: Boolean?): Set<ShoppingListResponse>
 
     fun updateShoppingList(id: Long, updateRequest: ShoppingListUpdateRequest, appUser: AppUser): ShoppingListResponse
 

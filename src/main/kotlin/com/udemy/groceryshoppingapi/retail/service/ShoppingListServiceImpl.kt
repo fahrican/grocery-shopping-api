@@ -30,7 +30,11 @@ class ShoppingListServiceImpl(
         return mapper.toDto(shoppingList)
     }
 
-    override fun getShoppingLists(appUser: AppUser): Set<ShoppingListResponse> {
+    override fun getShoppingLists(appUser: AppUser, isDone: Boolean?): Set<ShoppingListResponse> {
+        if (isDone != null) {
+            val shoppingLists = repository.findAllByAppUserAndDoneIs(appUser, isDone)
+            return shoppingLists?.map { mapper.toDto(it) }?.toSet() ?: emptySet()
+        }
         val shoppingLists = repository.findAllByAppUser(appUser)
         return shoppingLists?.map { mapper.toDto(it) }?.toSet() ?: emptySet()
     }
