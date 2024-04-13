@@ -13,6 +13,8 @@ info:
 servers:
   - url: http://localhost:9000
     description: DEVELOPMENT
+  - url: https://grocery-manager.my-domain.xyz/
+    description: PRODUCTION
 security:
   - BearerAuth: [ ]
 paths:
@@ -120,6 +122,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserInfoResponse'
+
   /api/v1/auth/sign-up:
     post:
       tags:
@@ -225,6 +228,135 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
+  /api/v1/shopping-list:
+    get:
+      tags:
+        - shopping-list-resource
+      summary: Get all shopping lists
+      operationId: getShoppingLists
+      description: methods to get all closed and open shopping lists
+      parameters:
+        - name: is-done
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: all open & closed shopping lists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShoppingListResponse'
+    post:
+      tags:
+        - shopping-list-resource
+      summary: Create a new shopping list
+      operationId: createShoppingList
+      description: method to create a new shopping list or inform about invalid input
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingListCreateRequest'
+        required: true
+      responses:
+        '201':
+          description: shopping list successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingListResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/v1/shopping-lists/{id}:
+    get:
+      tags:
+        - shopping-list-resource
+      summary: Get shopping list by its ID
+      operationId: getShoppingListById
+      description: method to get a shopping list by its ID or inform about not found
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Found the shopping list by the supplied ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingListResponse'
+        '404':
+          description: shopping list not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    delete:
+      tags:
+        - shopping-list-resource
+      summary: Delete a shopping list by its ID
+      operationId: deleteShoppingList
+      description: method to delete a shopping list by its ID or inform does not exist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: shopping list successfully deleted
+        '404':
+          description: shopping list not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    patch:
+      tags:
+        - shopping-list-resource
+      summary: Update an existing shopping list
+      operationId: updateShoppingList
+      description: method to update an existing shopping list or inform does not exist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingListUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: shopping list successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingListResponse'
+        '404':
+          description: shopping list not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
 components:
   schemas:
     RegisterRequest:
@@ -322,6 +454,214 @@ components:
           pattern: \w+
         lastName:
           type: string
+    ShoppingListResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the ShoppingList
+        receiptPictureUrl:
+          type: string
+          format: string
+          nullable: true
+          description: URL to the picture of the receipt
+        isDone:
+          type: boolean
+          description: Indicates if the shopping list is completed
+        supermarket:
+          $ref: '#/components/schemas/SupermarketResponse'
+          nullable: true
+        shoppingListItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShoppingListItemResponse'
+        totalAmount:
+          type: number
+          format: float
+          nullable: true
+          description: Total amount of the shopping list
+    ShoppingListItemResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the ShoppingListItem
+        quantity:
+          type: integer
+          description: Quantity of the grocery item
+        price:
+          type: number
+          format: float
+          description: Price of the grocery item
+        shoppingList:
+          $ref: '#/components/schemas/ShoppingListResponse'
+          nullable: true
+        groceryItem:
+          $ref: '#/components/schemas/GroceryItemResponse'
+          nullable: true
+    ShoppingListItemCreateRequest:
+      required:
+        - quantity
+        - price
+        - shoppingList
+        - groceryItem
+      type: object
+      properties:
+        quantity:
+          type: integer
+          description: Quantity of the grocery item
+        price:
+          type: number
+          format: float
+          description: Price of the grocery item
+        shoppingList:
+          $ref: '#/components/schemas/ShoppingListCreateRequest'
+          nullable: true
+        groceryItem:
+          type: object
+          $ref: '#/components/schemas/GroceryItemCreateRequest'
+          nullable: true
+    SupermarketResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the Supermarket
+        name:
+          $ref: '#/components/schemas/Hypermarket'
+    SupermarketCreateRequest:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/Hypermarket'
+    GroceryCategoryResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the Grocery Category
+        name:
+          $ref: '#/components/schemas/Category'
+          description: Name of the grocery category, representing different types of grocery items
+    GroceryCategoryCreateRequest:
+      type: object
+      properties:
+        category:
+          $ref: '#/components/schemas/Category'
+    Category:
+      type: string
+      enum:
+        - FRUITS
+        - CEREAL
+        - FRUIT_VEGETABLES
+        - VEGETABLES
+        - CANNED_GOODS
+        - DAIRY
+        - MEAT
+        - FISH
+        - SEAFOOD
+        - DELI
+        - SPICES
+        - BREAD
+        - BAKERY
+        - BEVERAGES
+        - PASTA
+        - RICE
+        - BAKING
+        - SNACKS
+        - SWEET
+        - FROZEN_FOOD
+        - ICE_CREAM
+        - HOUSEHOLD_SUPPLIES
+        - PET_FOOD
+        - OTHER
+    Hypermarket:
+      type: string
+      enum:
+        - BILLA,
+        - SPAR,
+        - LIDL,
+        - HOFER,
+        - ETSAN,
+        - OTHER
+    GroceryItemResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier for the Grocery Item
+        name:
+          type: string
+          description: Name of the grocery item
+        category:
+          $ref: '#/components/schemas/GroceryCategoryResponse'
+          nullable: true
+          description: The category of the grocery item, may not be specified
+    ShoppingListCreateRequest:
+      required:
+        - supermarket
+        - shoppingListItems
+      type: object
+      properties:
+        receiptPictureUrl:
+          type: string
+          format: string
+          nullable: true
+          description: URL to the image of the receipt (optional).
+        supermarket:
+          $ref: '#/components/schemas/SupermarketCreateRequest'
+          description: Details of the supermarket associated with the shopping list.
+        shoppingListItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShoppingListItemCreateRequest'
+          description: List of items included in the shopping list.
+    GroceryItemCreateRequest:
+      required:
+        - name
+        - groceryCategory
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the grocery item
+        groceryCategory:
+          $ref: '#/components/schemas/GroceryCategoryCreateRequest'
+          nullable: true
+          description: The category of the grocery item, may not be specified
+    ShoppingListUpdateRequest:
+      type: object
+      properties:
+        totalAmount:
+          type: number
+          format: float
+          nullable: true
+          description: Total monetary amount of the shopping list (optional).
+        receiptPictureUrl:
+          type: string
+          format: string
+          nullable: true
+          description: URL to the image of the receipt (optional).
+        isDone:
+          type: boolean
+          nullable: true
+          description: Status indicating if the shopping list is completed (optional).
+        supermarket:
+          type: object
+          $ref: '#/components/schemas/SupermarketCreateRequest'
+          nullable: true
+          description: Details of the supermarket associated with the shopping list (optional).
+        shoppingListItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShoppingListItemCreateRequest'
+          nullable: true
+          description: List of items included in the shopping list (optional).
     ApiError:
       required:
         - code

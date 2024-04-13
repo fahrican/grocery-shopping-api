@@ -23,5 +23,5 @@ class GroceryItem(
     val name: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    val category: GroceryCategory? = null
+    val groceryCategory: GroceryCategory? = null
 )

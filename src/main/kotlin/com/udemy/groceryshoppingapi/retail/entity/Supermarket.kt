@@ -1,6 +1,6 @@
 package com.udemy.groceryshoppingapi.retail.entity
 
-import com.udemy.groceryshoppingapi.retail.Hypermarket
+import com.udemy.groceryshoppingapi.dto.Hypermarket
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated

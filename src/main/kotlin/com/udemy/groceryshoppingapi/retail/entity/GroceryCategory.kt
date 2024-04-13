@@ -1,6 +1,6 @@
 package com.udemy.groceryshoppingapi.retail.entity
 
-import com.udemy.groceryshoppingapi.retail.Category
+import com.udemy.groceryshoppingapi.dto.Category
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
@@ -22,5 +22,5 @@ class GroceryCategory(
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    val name: Category = Category.OTHER
+    val category: Category = Category.OTHER
 )
