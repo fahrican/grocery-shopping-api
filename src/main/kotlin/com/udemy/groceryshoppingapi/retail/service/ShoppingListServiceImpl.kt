@@ -13,13 +13,12 @@ import com.udemy.groceryshoppingapi.retail.util.ShoppingListItemMapper
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListMapper
 import com.udemy.groceryshoppingapi.retail.util.SupermarketMapper
 import com.udemy.groceryshoppingapi.user.entity.AppUser
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class ShoppingListServiceImpl(
-    @Autowired private val shoppingListMapper: ShoppingListMapper,
-    @Autowired private val shoppingListItemMapper: ShoppingListItemMapper,
+    private val shoppingListMapper: ShoppingListMapper,
+    private val shoppingListItemMapper: ShoppingListItemMapper,
     private val supermarketMapper: SupermarketMapper,
     private val repository: ShoppingListRepository,
 ) : ShoppingListService {
