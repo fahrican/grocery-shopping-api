@@ -3,31 +3,13 @@ package com.udemy.groceryshoppingapi.retail.util
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemResponse
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
-import com.udemy.groceryshoppingapi.user.entity.AppUser
-import org.springframework.stereotype.Component
+import org.mapstruct.Mapper
+import org.mapstruct.Mapping
 
-@Component
-class ShoppingListItemMapper(
-    private val shoppingListMapper: ShoppingListMapper,
-    private val groceryItemMapper: GroceryItemMapper
-) {
+@Mapper(componentModel = "spring", uses = [SupermarketMapper::class, GroceryItemMapper::class])
+interface ShoppingListItemMapper {
+    fun toDto(entity: ShoppingListItem): ShoppingListItemResponse
 
-    fun toDto(entity: ShoppingListItem): ShoppingListItemResponse {
-        return ShoppingListItemResponse(
-            id = entity.id,
-            quantity = entity.quantity,
-            price = entity.price,
-            shoppingList = shoppingListMapper.toDto(entity.shoppingList),
-            groceryItem = if (entity.groceryItem != null) groceryItemMapper.toDto(entity.groceryItem!!) else null
-        )
-    }
-
-    fun toEntity(dto: ShoppingListItemCreateRequest, appUser: AppUser): ShoppingListItem {
-        return ShoppingListItem(
-            quantity = dto.quantity,
-            price = dto.price,
-            shoppingList = shoppingListMapper.toEntity(dto.shoppingList, appUser),
-            groceryItem = groceryItemMapper.toEntity(dto.groceryItem)
-        )
-    }
+    @Mapping(target = "shoppingList", source = "shoppingList")
+    fun toEntity(dto: ShoppingListItemCreateRequest): ShoppingListItem
 }

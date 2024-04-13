@@ -4,6 +4,7 @@ plugins {
     id("org.openapi.generator") version "7.4.0"
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
+    id("org.jetbrains.kotlin.kapt") version "1.9.23"
     kotlin("jvm") version "1.9.23"
     kotlin("plugin.spring") version "1.9.23"
     kotlin("plugin.jpa") version "1.9.23"
@@ -25,6 +26,7 @@ val openApiWebMvc = "2.4.0"
 val jupiterVersion = "5.10.2"
 val assertjVersion = "3.25.3"
 val mockkVersion = "1.13.10"
+val mapstructVersion = "1.5.5.Final"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -34,6 +36,10 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$openApiWebMvc")
+    implementation("org.mapstruct:mapstruct:$mapstructVersion")
+    kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
+    implementation("org.projectlombok:lombok")
+    kapt("org.projectlombok:lombok")
     implementation("io.jsonwebtoken:jjwt-api:$jwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:$jwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jwtVersion")
@@ -49,6 +55,9 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
+kapt {
+    correctErrorTypes = true
+}
 openApiGenerate {
     generatorName.set("kotlin-spring")
     inputSpec.set("$rootDir/src/main/resources/static/api/open-api.yml")
