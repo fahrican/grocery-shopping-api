@@ -505,7 +505,6 @@ components:
       required:
         - quantity
         - price
-        - shoppingList
         - groceryItem
       type: object
       properties:
