@@ -516,9 +516,6 @@ components:
           type: number
           format: float
           description: Price of the grocery item
-        shoppingList:
-          $ref: '#/components/schemas/ShoppingListCreateRequest'
-          nullable: true
         groceryItem:
           type: object
           $ref: '#/components/schemas/GroceryItemCreateRequest'
