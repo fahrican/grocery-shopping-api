@@ -579,11 +579,11 @@ components:
     Hypermarket:
       type: string
       enum:
-        - BILLA,
-        - SPAR,
-        - LIDL,
-        - HOFER,
-        - ETSAN,
+        - BILLA
+        - SPAR
+        - LIDL
+        - HOFER
+        - ETSAN
         - OTHER
     GroceryItemResponse:
       type: object
