@@ -10,5 +10,4 @@ import org.springframework.stereotype.Repository
 interface SupermarketRepository : JpaRepository<Supermarket, Long> {
 
     fun findByName(name: Hypermarket): Supermarket?
-
 }

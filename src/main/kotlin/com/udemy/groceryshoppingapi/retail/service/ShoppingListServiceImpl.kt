@@ -1,6 +1,5 @@
 package com.udemy.groceryshoppingapi.retail.service
 
-import com.udemy.groceryshoppingapi.dto.Hypermarket
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
@@ -33,17 +32,15 @@ class ShoppingListServiceImpl(
             throw BadRequestException("A shopping list must have at least one item")
         }
 
-        val supermarket = validateSupermarketName(createRequest)
+        val supermarket = supermarketRepository.findByName(createRequest.supermarket.name)
+            ?: throw BadRequestException("Supermarket ${createRequest.supermarket.name} does not exist!")
 
-        // Map the DTO to entity
         val shoppingList = shoppingListMapper.toEntity(createRequest)
-        shoppingList.supermarket = supermarket // Ensure the supermarket is attached
-        shoppingList.appUser = appUser // Assign the user
+        shoppingList.supermarket = supermarket
+        shoppingList.appUser = appUser
 
-        // Save the entity
         val entity = shoppingListRepository.save(shoppingList)
 
-        // Return the mapped DTO
         return shoppingListMapper.toDto(entity)
     }
 
@@ -89,17 +86,5 @@ class ShoppingListServiceImpl(
         val shoppingList = shoppingListRepository.findByIdAndAppUser(id, appUser)
             ?: throw ShoppingListNotFoundException(message = "Task with ID: $id does not exist!")
         return shoppingList
-    }
-
-    private fun validateSupermarketName(createRequest: ShoppingListCreateRequest): Supermarket? {
-        val supermarketName: String = createRequest.supermarket.name.name
-        val hypermarket: Hypermarket
-        if (Hypermarket.entries.map { it.name }.contains(supermarketName)) {
-            hypermarket = Hypermarket.valueOf(supermarketName);
-        } else {
-            throw BadRequestException("Supermarket ${createRequest.supermarket.name} does not exist!")
-        }
-        val supermarket = supermarketRepository.findByName(hypermarket)
-        return supermarket
     }
 }
