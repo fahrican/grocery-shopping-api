@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface SupermarketRepository: JpaRepository<Supermarket, Long> {
+
+    fun findByName(name: String): Supermarket
 }

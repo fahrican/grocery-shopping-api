@@ -9,10 +9,12 @@ import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
 import com.udemy.groceryshoppingapi.retail.entity.Supermarket
 import com.udemy.groceryshoppingapi.retail.repository.ShoppingListRepository
+import com.udemy.groceryshoppingapi.retail.repository.SupermarketRepository
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListItemMapper
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListMapper
 import com.udemy.groceryshoppingapi.retail.util.SupermarketMapper
 import com.udemy.groceryshoppingapi.user.entity.AppUser
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
@@ -20,14 +22,28 @@ class ShoppingListServiceImpl(
     private val shoppingListMapper: ShoppingListMapper,
     private val shoppingListItemMapper: ShoppingListItemMapper,
     private val supermarketMapper: SupermarketMapper,
-    private val repository: ShoppingListRepository,
+    private val shoppingListRepository: ShoppingListRepository,
+    private val supermarketRepository: SupermarketRepository
 ) : ShoppingListService {
+
+    @Transactional
     override fun createShoppingList(createRequest: ShoppingListCreateRequest, appUser: AppUser): ShoppingListResponse {
         if (createRequest.shoppingListItems.isEmpty()) {
             throw BadRequestException("A shopping list must have at least one item")
         }
+
+        // Fetch or verify the supermarket before mapping and saving
+        val supermarket = supermarketRepository.findByName(createRequest.supermarket.name.name)
+
+        // Map the DTO to entity
         val shoppingList = shoppingListMapper.toEntity(createRequest)
-        val entity = repository.save(shoppingList)
+        shoppingList.supermarket = supermarket // Ensure the supermarket is attached
+        shoppingList.appUser = appUser // Assign the user
+
+        // Save the entity
+        val entity = shoppingListRepository.save(shoppingList)
+
+        // Return the mapped DTO
         return shoppingListMapper.toDto(entity)
     }
 
@@ -38,10 +54,10 @@ class ShoppingListServiceImpl(
 
     override fun getShoppingLists(appUser: AppUser, isDone: Boolean?): Set<ShoppingListResponse> {
         if (isDone != null) {
-            val shoppingLists = repository.findAllByAppUserAndIsDone(appUser, isDone)
+            val shoppingLists = shoppingListRepository.findAllByAppUserAndIsDone(appUser, isDone)
             return shoppingLists?.map { shoppingListMapper.toDto(it) }?.toSet() ?: emptySet()
         }
-        val shoppingLists = repository.findAllByAppUser(appUser)
+        val shoppingLists = shoppingListRepository.findAllByAppUser(appUser)
         return shoppingLists?.map { shoppingListMapper.toDto(it) }?.toSet() ?: emptySet()
     }
 
@@ -60,17 +76,17 @@ class ShoppingListServiceImpl(
             this.supermarket = updatedSupermarket ?: this.supermarket
             this.shoppingListItems = updatedShoppingListItems ?: this.shoppingListItems
         }
-        val entity = repository.save(shoppingList)
+        val entity = shoppingListRepository.save(shoppingList)
         return shoppingListMapper.toDto(entity)
     }
 
     override fun deleteShoppingList(id: Long, appUser: AppUser) {
         validateShoppingList(id, appUser)
-        repository.deleteById(id)
+        shoppingListRepository.deleteById(id)
     }
 
     private fun validateShoppingList(id: Long, appUser: AppUser): ShoppingList {
-        val shoppingList = repository.findByIdAndAppUser(id, appUser)
+        val shoppingList = shoppingListRepository.findByIdAndAppUser(id, appUser)
             ?: throw ShoppingListNotFoundException(message = "Task with ID: $id does not exist!")
         return shoppingList
     }

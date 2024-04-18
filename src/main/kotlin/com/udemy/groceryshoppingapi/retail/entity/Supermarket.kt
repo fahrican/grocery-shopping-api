@@ -24,5 +24,3 @@ class Supermarket(
     @Enumerated(EnumType.STRING)
     var name: Hypermarket = Hypermarket.OTHER,
 )
-
-

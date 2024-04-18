@@ -529,6 +529,8 @@ components:
         name:
           $ref: '#/components/schemas/Hypermarket'
     SupermarketCreateRequest:
+      required:
+        - name
       type: object
       properties:
         name:
