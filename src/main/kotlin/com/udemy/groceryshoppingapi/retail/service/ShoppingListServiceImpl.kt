@@ -1,5 +1,6 @@
 package com.udemy.groceryshoppingapi.retail.service
 
+import com.udemy.groceryshoppingapi.dto.Hypermarket
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
@@ -32,8 +33,7 @@ class ShoppingListServiceImpl(
             throw BadRequestException("A shopping list must have at least one item")
         }
 
-        // Fetch or verify the supermarket before mapping and saving
-        val supermarket = supermarketRepository.findByName(createRequest.supermarket.name.name)
+        val supermarket = validateSupermarketName(createRequest)
 
         // Map the DTO to entity
         val shoppingList = shoppingListMapper.toEntity(createRequest)
@@ -89,5 +89,17 @@ class ShoppingListServiceImpl(
         val shoppingList = shoppingListRepository.findByIdAndAppUser(id, appUser)
             ?: throw ShoppingListNotFoundException(message = "Task with ID: $id does not exist!")
         return shoppingList
+    }
+
+    private fun validateSupermarketName(createRequest: ShoppingListCreateRequest): Supermarket? {
+        val supermarketName: String = createRequest.supermarket.name.name
+        val hypermarket: Hypermarket
+        if (Hypermarket.entries.map { it.name }.contains(supermarketName)) {
+            hypermarket = Hypermarket.valueOf(supermarketName);
+        } else {
+            throw BadRequestException("Supermarket ${createRequest.supermarket.name} does not exist!")
+        }
+        val supermarket = supermarketRepository.findByName(hypermarket)
+        return supermarket
     }
 }
