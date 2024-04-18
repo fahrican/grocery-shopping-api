@@ -35,27 +35,27 @@ class ShoppingListServiceImpl(
         val supermarket = supermarketRepository.findByName(createRequest.supermarket.name)
             ?: throw BadRequestException("Supermarket ${createRequest.supermarket.name} does not exist!")
 
-        val shoppingList = shoppingListMapper.toEntity(createRequest)
-        shoppingList.supermarket = supermarket
-        shoppingList.appUser = appUser
+        val shoppingList = shoppingListMapper.toEntity(createRequest, appUser, supermarket, shoppingListItemMapper)
 
         val entity = shoppingListRepository.save(shoppingList)
 
-        return shoppingListMapper.toDto(entity)
+        return shoppingListMapper.toDto(entity, supermarketMapper, shoppingListItemMapper)
     }
 
     override fun getShoppingListById(id: Long, appUser: AppUser): ShoppingListResponse {
         val shoppingList: ShoppingList = validateShoppingList(id, appUser)
-        return shoppingListMapper.toDto(shoppingList)
+        return shoppingListMapper.toDto(shoppingList, supermarketMapper, shoppingListItemMapper)
     }
 
     override fun getShoppingLists(appUser: AppUser, isDone: Boolean?): Set<ShoppingListResponse> {
         if (isDone != null) {
             val shoppingLists = shoppingListRepository.findAllByAppUserAndIsDone(appUser, isDone)
-            return shoppingLists?.map { shoppingListMapper.toDto(it) }?.toSet() ?: emptySet()
+            return shoppingLists?.map { shoppingListMapper.toDto(it, supermarketMapper, shoppingListItemMapper) }
+                ?.toSet() ?: emptySet()
         }
         val shoppingLists = shoppingListRepository.findAllByAppUser(appUser)
-        return shoppingLists?.map { shoppingListMapper.toDto(it) }?.toSet() ?: emptySet()
+        return shoppingLists?.map { shoppingListMapper.toDto(it, supermarketMapper, shoppingListItemMapper) }?.toSet()
+            ?: emptySet()
     }
 
     override fun updateShoppingList(
@@ -74,7 +74,7 @@ class ShoppingListServiceImpl(
             this.shoppingListItems = updatedShoppingListItems ?: this.shoppingListItems
         }
         val entity = shoppingListRepository.save(shoppingList)
-        return shoppingListMapper.toDto(entity)
+        return shoppingListMapper.toDto(entity, supermarketMapper, shoppingListItemMapper)
     }
 
     override fun deleteShoppingList(id: Long, appUser: AppUser) {
