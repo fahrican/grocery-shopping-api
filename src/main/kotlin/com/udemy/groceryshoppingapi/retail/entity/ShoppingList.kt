@@ -34,7 +34,7 @@ class ShoppingList(
     var supermarket: Supermarket? = null,
 
     @OneToMany(mappedBy = "shoppingList", fetch = FetchType.LAZY)
-    var shoppingListItems: List<ShoppingListItem> = emptyList()
+    var shoppingListItems: List<ShoppingListItem> = mutableListOf()
 ) {
     fun getTotalAmount(): Float {
         var totalAmount = 0f
