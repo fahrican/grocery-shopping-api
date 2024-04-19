@@ -482,6 +482,10 @@ components:
           nullable: true
           description: Total amount of the shopping list
     ShoppingListItemResponse:
+      required:
+        - id
+        - quantity
+        - price
       type: object
       properties:
         id:
