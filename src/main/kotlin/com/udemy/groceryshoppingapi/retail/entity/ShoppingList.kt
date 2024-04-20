@@ -34,7 +34,7 @@ class ShoppingList(
     @JoinColumn(name = "supermarket_id")
     var supermarket: Supermarket? = null,
 
-    @OneToMany(mappedBy = "shoppingList", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @OneToMany(mappedBy = "shoppingList", fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     var shoppingListItems: List<ShoppingListItem> = mutableListOf()
 ) {
     fun getTotalAmount(): Float {

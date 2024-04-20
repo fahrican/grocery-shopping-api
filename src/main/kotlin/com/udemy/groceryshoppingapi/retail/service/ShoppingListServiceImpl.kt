@@ -1,11 +1,13 @@
 package com.udemy.groceryshoppingapi.retail.service
 
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
+import com.udemy.groceryshoppingapi.dto.ShoppingListItemResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
 import com.udemy.groceryshoppingapi.dto.SupermarketResponse
 import com.udemy.groceryshoppingapi.error.BadRequestException
 import com.udemy.groceryshoppingapi.error.ShoppingListNotFoundException
+import com.udemy.groceryshoppingapi.error.SupermarketException
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
 import com.udemy.groceryshoppingapi.retail.entity.Supermarket
@@ -49,8 +51,11 @@ class ShoppingListServiceImpl(
 
     override fun getShoppingListById(id: Long, appUser: AppUser): ShoppingListResponse {
         val shoppingList: ShoppingList = validateShoppingList(id, appUser)
-        val supermarket = supermarketMapper.toDto(shoppingList.supermarket!!)
-        val shoppingListItems = shoppingList.shoppingListItems.map { shoppingListItemMapper.toDto(it, null) }
+        val supermarket = shoppingList.supermarket?.let { supermarketMapper.toDto(it) }
+            ?: throw SupermarketException("There is no supermarket associated with this shopping list!")
+        val shoppingListItems: List<ShoppingListItemResponse> = shoppingList.shoppingListItems.map {
+            shoppingListItemMapper.toDto(it, null)
+        }
         return shoppingListMapper.toDto(shoppingList, supermarket, shoppingListItems)
     }
 
@@ -95,7 +100,7 @@ class ShoppingListServiceImpl(
 
     private fun validateShoppingList(id: Long, appUser: AppUser): ShoppingList {
         val shoppingList = shoppingListRepository.findByIdAndAppUser(id, appUser)
-            ?: throw ShoppingListNotFoundException(message = "Task with ID: $id does not exist!")
+            ?: throw ShoppingListNotFoundException(message = "Shopping list with ID: $id does not exist!")
         return shoppingList
     }
 

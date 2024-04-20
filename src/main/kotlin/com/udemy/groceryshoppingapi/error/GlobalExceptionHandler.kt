@@ -39,7 +39,7 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleUnauthorizedException(exception: RuntimeException): ResponseEntity<ApiError> =
         buildResponseEntity(HttpStatus.UNAUTHORIZED, exception.message)
 
-    @ExceptionHandler(BadRequestException::class)
+    @ExceptionHandler(BadRequestException::class, SupermarketException::class)
     fun handleBadRequestException(exception: BadRequestException): ResponseEntity<ApiError> =
         buildResponseEntity(HttpStatus.BAD_REQUEST, exception.message)
 }
@@ -63,3 +63,5 @@ class TokenExpiredException(message: String) : RuntimeException(message)
 class JwtKeyException(message: String) : IllegalStateException(message)
 
 class ShoppingListNotFoundException(message: String) : RuntimeException(message)
+
+class SupermarketException(message: String) : RuntimeException(message)
