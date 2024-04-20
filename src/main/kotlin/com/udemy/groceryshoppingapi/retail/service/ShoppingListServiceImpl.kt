@@ -14,6 +14,7 @@ import com.udemy.groceryshoppingapi.retail.util.ShoppingListItemMapper
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListMapper
 import com.udemy.groceryshoppingapi.retail.util.SupermarketMapper
 import com.udemy.groceryshoppingapi.user.entity.AppUser
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
@@ -28,14 +29,15 @@ class ShoppingListServiceImpl(
 ) : ShoppingListService {
 
 
+    @Transactional
     override fun createShoppingList(createRequest: ShoppingListCreateRequest, appUser: AppUser): ShoppingListResponse {
         if (createRequest.shoppingListItems.isEmpty()) {
             throw BadRequestException("A shopping list must have at least one item")
         }
 
-        createRequest.shoppingListItems.map { groceryItemService.createGroceryItem(it.groceryItem, appUser) }
+        //createRequest.shoppingListItems.map { groceryItemService.createGroceryItem(it.groceryItem, appUser) }
 
-        val shoppingListItems: List<ShoppingListItem> = createRequest.shoppingListItems.map {
+        var shoppingListItems: List<ShoppingListItem> = createRequest.shoppingListItems.map {
             shoppingListItemService.createShoppingListItem(it, appUser, null)
         }
 
@@ -43,8 +45,8 @@ class ShoppingListServiceImpl(
             ?: throw BadRequestException("Supermarket ${createRequest.supermarket.name} does not exist!")
 
         val shoppingList = shoppingListMapper.toEntity(createRequest, supermarket, shoppingListItems, appUser)
-        shoppingListItems.forEach { it.shoppingList = shoppingList }
         val entity = shoppingListRepository.save(shoppingList)
+        shoppingListItems = shoppingListItemService.updateShoppingList(appUser, shoppingList, shoppingListItems)
 
         // set up dtos
         val supermarketResponse = supermarketMapper.toDto(supermarket)

@@ -13,6 +13,12 @@ interface ShoppingListItemService {
         shoppingList: ShoppingList?
     ): ShoppingListItem
 
+    fun updateShoppingList(
+        appUser: AppUser,
+        shoppingList: ShoppingList,
+        shoppingListItems: List<ShoppingListItem>
+    ): List<ShoppingListItem>
+
     /*    fun deleteShoppingListItem(shoppingListId: Long, shoppingListItemId: Long)
         fun getShoppingListItems(shoppingListId: Long): List<ShoppingListItemResponse>
         fun getShoppingListItem(shoppingListId: Long, shoppingListItemId: Long): ShoppingListItemResponse*/

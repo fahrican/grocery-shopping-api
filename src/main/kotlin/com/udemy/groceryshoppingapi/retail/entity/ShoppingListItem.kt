@@ -32,7 +32,7 @@ class ShoppingListItem(
     @JoinColumn(name = "shopping_list_id")
     var shoppingList: ShoppingList? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST])
     @JoinColumn(name = "grocery_item_id")
     var groceryItem: GroceryItem? = null
 )
