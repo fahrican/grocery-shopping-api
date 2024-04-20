@@ -6,16 +6,16 @@ import com.udemy.groceryshoppingapi.retail.entity.GroceryItem
 import org.springframework.stereotype.Component
 
 @Component
-class GroceryItemMapper(private val groceryCategoryMapper: GroceryCategoryMapper) {
+class GroceryItemMapper {
 
     fun toDto(item: GroceryItem) = GroceryItemResponse(
         id = item.id,
         name = item.name,
-        category = if (item.groceryCategory != null) groceryCategoryMapper.toDto(item.groceryCategory) else null
+        category = item.category
     )
 
     fun toEntity(dto: GroceryItemCreateRequest) = GroceryItem(
         name = dto.name,
-        groceryCategory = groceryCategoryMapper.toEntity(dto)
+        category = dto.category
     )
 }
