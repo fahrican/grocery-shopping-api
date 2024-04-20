@@ -6,11 +6,8 @@ import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
 import com.udemy.groceryshoppingapi.dto.SupermarketResponse
 import com.udemy.groceryshoppingapi.error.BadRequestException
 import com.udemy.groceryshoppingapi.error.ShoppingListNotFoundException
-import com.udemy.groceryshoppingapi.retail.entity.GroceryItem
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
-import com.udemy.groceryshoppingapi.retail.repository.GroceryItemRepository
-import com.udemy.groceryshoppingapi.retail.repository.ShoppingListItemRepository
 import com.udemy.groceryshoppingapi.retail.repository.ShoppingListRepository
 import com.udemy.groceryshoppingapi.retail.repository.SupermarketRepository
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListItemMapper
@@ -25,9 +22,9 @@ class ShoppingListServiceImpl(
     private val shoppingListItemMapper: ShoppingListItemMapper,
     private val supermarketMapper: SupermarketMapper,
     private val shoppingListRepository: ShoppingListRepository,
-    private val shoppingListItemRepository: ShoppingListItemRepository,
     private val supermarketRepository: SupermarketRepository,
-    private val groceryItemRepository: GroceryItemRepository,
+    private val groceryItemService: GroceryItemService,
+    private val shoppingListItemService: ShoppingListItemService
 ) : ShoppingListService {
 
 
@@ -36,24 +33,14 @@ class ShoppingListServiceImpl(
             throw BadRequestException("A shopping list must have at least one item")
         }
 
-        val groceryItems = createRequest.shoppingListItems.map { shoppingListItemRequest ->
-            val groceryItem =
-                GroceryItem(
-                    name = shoppingListItemRequest.groceryItem.name,
-                    category = shoppingListItemRequest.groceryItem.category
-                )
-            groceryItemRepository.saveAndFlush(groceryItem)
-            groceryItem
+        createRequest.shoppingListItems.map { groceryItemService.createGroceryItem(it.groceryItem, appUser) }
+
+        val shoppingListItems: List<ShoppingListItem> = createRequest.shoppingListItems.map {
+            shoppingListItemService.createShoppingListItem(it, appUser, null)
         }
 
-        // set up entities
         val supermarket = supermarketRepository.findByName(createRequest.supermarket.name)
             ?: throw BadRequestException("Supermarket ${createRequest.supermarket.name} does not exist!")
-        val shoppingListItems: List<ShoppingListItem> = groceryItems.map { groceryItem ->
-            createRequest.shoppingListItems.find { it.groceryItem.name == groceryItem.name }?.let {
-                shoppingListItemMapper.toEntity(it, null, groceryItem)
-            } ?: ShoppingListItem()
-        }
 
         val shoppingList = shoppingListMapper.toEntity(createRequest, supermarket, shoppingListItems, appUser)
         shoppingListItems.forEach { it.shoppingList = shoppingList }
