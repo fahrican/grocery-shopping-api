@@ -60,17 +60,25 @@ class ShoppingListServiceImpl(
     }
 
     override fun getShoppingLists(appUser: AppUser, isDone: Boolean?): Set<ShoppingListResponse> {
-        /*     if (isDone != null) {
-                 val shoppingLists = shoppingListRepository.findAllByAppUserAndIsDone(appUser, isDone)
-                 return shoppingLists?.map { shoppingListMapper.toDto(it) }
-                     ?.toSet() ?: emptySet()
-             }
-             val shoppingLists = shoppingListRepository.findAllByAppUser(appUser)
-             return shoppingLists?.map { shoppingListMapper.toDto(it) }?.toSet()
-                 ?: emptySet()*/
+        val shoppingLists: List<ShoppingList> = if (isDone != null) {
+            shoppingListRepository.findAllByAppUserAndIsDone(appUser, isDone)
+        } else {
+            shoppingListRepository.findAllByAppUser(appUser)
+        } ?: return emptySet()
 
-        return emptySet()
+        val (supermarketResponses, shoppingListItems) = shoppingLists.map { shoppingList ->
+            val supermarketResponse =
+                shoppingList.supermarket?.let { supermarketMapper.toDto(it) } ?: SupermarketResponse()
+            val shoppingListItemResponses =
+                shoppingList.shoppingListItems.map { shoppingListItemMapper.toDto(it, null) }
+            Pair(supermarketResponse, shoppingListItemResponses)
+        }.unzip()
+
+        return shoppingLists.map {
+            shoppingListMapper.toDto(it, supermarketResponses[shoppingLists.indexOf(it)], shoppingListItems.flatten())
+        }.toSet()
     }
+
 
     override fun updateShoppingList(
         id: Long,
