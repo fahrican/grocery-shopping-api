@@ -1,6 +1,7 @@
 package com.udemy.groceryshoppingapi.retail.entity
 
 import com.udemy.groceryshoppingapi.user.entity.AppUser
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -33,7 +34,7 @@ class ShoppingList(
     @JoinColumn(name = "supermarket_id")
     var supermarket: Supermarket? = null,
 
-    @OneToMany(mappedBy = "shoppingList", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "shoppingList", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     var shoppingListItems: List<ShoppingListItem> = mutableListOf()
 ) {
     fun getTotalAmount(): Float {
