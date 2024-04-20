@@ -8,6 +8,7 @@ import com.udemy.groceryshoppingapi.error.BadRequestException
 import com.udemy.groceryshoppingapi.error.ShoppingListNotFoundException
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
+import com.udemy.groceryshoppingapi.retail.entity.Supermarket
 import com.udemy.groceryshoppingapi.retail.repository.ShoppingListRepository
 import com.udemy.groceryshoppingapi.retail.repository.SupermarketRepository
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListItemMapper
@@ -24,10 +25,8 @@ class ShoppingListServiceImpl(
     private val supermarketMapper: SupermarketMapper,
     private val shoppingListRepository: ShoppingListRepository,
     private val supermarketRepository: SupermarketRepository,
-    private val groceryItemService: GroceryItemService,
     private val shoppingListItemService: ShoppingListItemService
 ) : ShoppingListService {
-
 
     @Transactional
     override fun createShoppingList(createRequest: ShoppingListCreateRequest, appUser: AppUser): ShoppingListResponse {
@@ -35,28 +34,18 @@ class ShoppingListServiceImpl(
             throw BadRequestException("A shopping list must have at least one item")
         }
 
-        //createRequest.shoppingListItems.map { groceryItemService.createGroceryItem(it.groceryItem, appUser) }
-
         var shoppingListItems: List<ShoppingListItem> = createRequest.shoppingListItems.map {
-            shoppingListItemService.createShoppingListItem(it, appUser, null)
+            shoppingListItemService.createShoppingListItem(it, null)
         }
-
         val supermarket = supermarketRepository.findByName(createRequest.supermarket.name)
             ?: throw BadRequestException("Supermarket ${createRequest.supermarket.name} does not exist!")
-
         val shoppingList = shoppingListMapper.toEntity(createRequest, supermarket, shoppingListItems, appUser)
         val entity = shoppingListRepository.save(shoppingList)
-        shoppingListItems = shoppingListItemService.updateShoppingList(appUser, shoppingList, shoppingListItems)
+        shoppingListItems = shoppingListItemService.updateShoppingList(shoppingList, shoppingListItems)
 
-        // set up dtos
-        val supermarketResponse = supermarketMapper.toDto(supermarket)
-        var shoppingListItemsResponse =
-            shoppingListItems.map { shoppingListItemMapper.toDto(it, null) }
-        val shoppingListResponse = shoppingListMapper.toDto(entity, supermarketResponse, shoppingListItemsResponse)
-        shoppingListItemsResponse =
-            shoppingListItems.map { shoppingListItemMapper.toDto(it, shoppingListResponse) }
-        return shoppingListResponse
+        return generateShoppingListResponse(supermarket, shoppingListItems, entity)
     }
+
 
     override fun getShoppingListById(id: Long, appUser: AppUser): ShoppingListResponse {
         val shoppingList: ShoppingList = validateShoppingList(id, appUser)
@@ -108,5 +97,24 @@ class ShoppingListServiceImpl(
         val shoppingList = shoppingListRepository.findByIdAndAppUser(id, appUser)
             ?: throw ShoppingListNotFoundException(message = "Task with ID: $id does not exist!")
         return shoppingList
+    }
+
+    private fun generateShoppingListResponse(
+        supermarket: Supermarket,
+        shoppingListItems: List<ShoppingListItem>,
+        entity: ShoppingList
+    ): ShoppingListResponse {
+        val supermarketResponse = supermarketMapper.toDto(supermarket)
+        val shoppingListItemResponses = shoppingListItems.map { shoppingListItemMapper.toDto(it, null) }
+        val shoppingListResponse = shoppingListMapper.toDto(entity, supermarketResponse, shoppingListItemResponses)
+        shoppingListItemResponses.forEach { _ ->
+            shoppingListItems.map {
+                shoppingListItemMapper.toDto(
+                    it,
+                    shoppingListResponse
+                )
+            }
+        }
+        return shoppingListResponse
     }
 }
