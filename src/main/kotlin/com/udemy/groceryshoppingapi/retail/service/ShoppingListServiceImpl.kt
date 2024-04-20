@@ -22,11 +22,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class ShoppingListServiceImpl(
-    private val shoppingListMapper: ShoppingListMapper,
-    private val shoppingListItemMapper: ShoppingListItemMapper,
     private val supermarketMapper: SupermarketMapper,
-    private val shoppingListRepository: ShoppingListRepository,
     private val supermarketRepository: SupermarketRepository,
+    private val shoppingListMapper: ShoppingListMapper,
+    private val shoppingListRepository: ShoppingListRepository,
+    private val shoppingListItemMapper: ShoppingListItemMapper,
     private val shoppingListItemService: ShoppingListItemService
 ) : ShoppingListService {
 
