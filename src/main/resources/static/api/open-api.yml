@@ -539,21 +539,6 @@ components:
       properties:
         name:
           $ref: '#/components/schemas/Hypermarket'
-    GroceryCategoryResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          description: Unique identifier for the Grocery Category
-        name:
-          $ref: '#/components/schemas/Category'
-          description: Name of the grocery category, representing different types of grocery items
-    GroceryCategoryCreateRequest:
-      type: object
-      properties:
-        category:
-          $ref: '#/components/schemas/Category'
     Category:
       type: string
       enum:
@@ -601,9 +586,7 @@ components:
           type: string
           description: Name of the grocery item
         category:
-          $ref: '#/components/schemas/GroceryCategoryResponse'
-          nullable: true
-          description: The category of the grocery item, may not be specified
+          $ref: '#/components/schemas/Category'
     ShoppingListCreateRequest:
       required:
         - supermarket
@@ -626,16 +609,14 @@ components:
     GroceryItemCreateRequest:
       required:
         - name
-        - groceryCategory
+        - category
       type: object
       properties:
         name:
           type: string
           description: Name of the grocery item
-        groceryCategory:
-          $ref: '#/components/schemas/GroceryCategoryCreateRequest'
-          nullable: true
-          description: The category of the grocery item, may not be specified
+        category:
+          $ref: '#/components/schemas/Category'
     ShoppingListUpdateRequest:
       type: object
       properties:
