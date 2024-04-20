@@ -3,6 +3,7 @@ package com.udemy.groceryshoppingapi.retail.util
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
+import com.udemy.groceryshoppingapi.retail.entity.GroceryItem
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
 import org.springframework.stereotype.Component
@@ -25,8 +26,11 @@ class ShoppingListItemMapper(
         return dto
     }
 
-    fun toEntity(request: ShoppingListItemCreateRequest, shoppingList: ShoppingList?): ShoppingListItem {
-        val groceryItemEntity = groceryItemMapper.toEntity(request.groceryItem)
+    fun toEntity(
+        request: ShoppingListItemCreateRequest,
+        shoppingList: ShoppingList?,
+        groceryItemEntity: GroceryItem
+    ): ShoppingListItem {
         val entity = ShoppingListItem(
             quantity = request.quantity,
             price = request.price,
