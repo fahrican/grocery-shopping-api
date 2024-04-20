@@ -1,5 +1,6 @@
 package com.udemy.groceryshoppingapi.retail.entity
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -31,7 +32,7 @@ class ShoppingListItem(
     @JoinColumn(name = "shopping_list_id")
     var shoppingList: ShoppingList? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     @JoinColumn(name = "grocery_item_id")
     var groceryItem: GroceryItem? = null
 )
