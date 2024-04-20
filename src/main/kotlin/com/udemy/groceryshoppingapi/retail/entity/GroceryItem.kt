@@ -1,14 +1,16 @@
 package com.udemy.groceryshoppingapi.retail.entity
 
+import com.udemy.groceryshoppingapi.dto.Category
 import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
 @Entity
 @Table(name = "grocery_item")
@@ -22,6 +24,7 @@ class GroceryItem(
     @NotBlank
     val name: String,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    val groceryCategory: GroceryCategory? = null
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    val category: Category = Category.OTHER
 )
