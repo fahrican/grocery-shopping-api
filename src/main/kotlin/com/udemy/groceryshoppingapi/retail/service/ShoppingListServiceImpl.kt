@@ -101,9 +101,11 @@ class ShoppingListServiceImpl(
         return ShoppingListResponse(0, "", false, SupermarketResponse(), emptyList(), 0f)
     }
 
+    @Transactional
     override fun deleteShoppingList(id: Long, appUser: AppUser) {
-        validateShoppingList(id, appUser)
-        shoppingListRepository.deleteById(id)
+        val shoppingList = validateShoppingList(id, appUser)
+        shoppingListItemService.deleteShoppingListItems(shoppingList.shoppingListItems)
+        shoppingListRepository.delete(shoppingList)
     }
 
     private fun validateShoppingList(id: Long, appUser: AppUser): ShoppingList {
