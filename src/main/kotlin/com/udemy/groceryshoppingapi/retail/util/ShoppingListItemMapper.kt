@@ -20,7 +20,6 @@ class ShoppingListItemMapper(
             entity.id,
             entity.quantity,
             entity.price,
-            shoppingListResponse,  // todo: check this
             groceryItemResponse
         )
         return dto
