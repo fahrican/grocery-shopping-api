@@ -52,12 +52,12 @@ class ShoppingListItemServiceImpl(
         shoppingListItems: List<ShoppingListItemCreateRequest>
     ): List<ShoppingListItem> {
         val updatedShoppingListItems: MutableList<ShoppingListItem> = mutableListOf()
-        deleteShoppingListItems(shoppingList.shoppingListItems)
+        repository.deleteAll(shoppingList.shoppingListItems)
         shoppingListItems.forEach {
             val groceryItem = groceryItemMapper.toEntity(it.groceryItem)
             val shoppingListItem = mapper.toEntity(it, shoppingList, groceryItem)
             updatedShoppingListItems.add(shoppingListItem)
         }
-        return repository.saveAllAndFlush(updatedShoppingListItems)
+        return repository.saveAll(updatedShoppingListItems)
     }
 }
