@@ -499,9 +499,6 @@ components:
           type: number
           format: float
           description: Price of the grocery item
-        shoppingList:
-          $ref: '#/components/schemas/ShoppingListResponse'
-          nullable: true
         groceryItem:
           $ref: '#/components/schemas/GroceryItemResponse'
           nullable: true
@@ -544,7 +541,6 @@ components:
       enum:
         - FRUITS
         - CEREAL
-        - FRUIT_VEGETABLES
         - VEGETABLES
         - CANNED_GOODS
         - DAIRY
