@@ -12,7 +12,6 @@ import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
 import com.udemy.groceryshoppingapi.retail.entity.Supermarket
 import com.udemy.groceryshoppingapi.retail.repository.ShoppingListRepository
-import com.udemy.groceryshoppingapi.retail.repository.SupermarketRepository
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListItemMapper
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListMapper
 import com.udemy.groceryshoppingapi.retail.util.SupermarketMapper
@@ -22,10 +21,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class ShoppingListServiceImpl(
-    private val supermarketMapper: SupermarketMapper,
-    private val supermarketRepository: SupermarketRepository,
     private val shoppingListMapper: ShoppingListMapper,
-    private val shoppingListRepository: ShoppingListRepository,
+    private val repository: ShoppingListRepository,
+    private val supermarketMapper: SupermarketMapper,
+    private val supermarketService: SupermarketService,
     private val shoppingListItemMapper: ShoppingListItemMapper,
     private val shoppingListItemService: ShoppingListItemService
 ) : ShoppingListService {
@@ -39,10 +38,10 @@ class ShoppingListServiceImpl(
         var shoppingListItems: List<ShoppingListItem> = createRequest.shoppingListItems.map {
             shoppingListItemService.createShoppingListItem(it, null)
         }
-        val supermarket = supermarketRepository.findByName(createRequest.supermarket.name)
-            ?: throw BadRequestException("Supermarket ${createRequest.supermarket.name} does not exist!")
-        val shoppingList = shoppingListMapper.toEntity(createRequest, supermarket, shoppingListItems, appUser)
-        val entity = shoppingListRepository.save(shoppingList)
+        val supermarket: Supermarket = supermarketService.findSupermarketByName(createRequest.supermarket.name)
+        val shoppingList: ShoppingList =
+            shoppingListMapper.toEntity(createRequest, supermarket, shoppingListItems, appUser)
+        val entity: ShoppingList = repository.save(shoppingList)
         shoppingListItems = shoppingListItemService.updateShoppingList(shoppingList, shoppingListItems)
 
         return generateShoppingListResponse(supermarket, shoppingListItems, entity)
@@ -61,9 +60,9 @@ class ShoppingListServiceImpl(
 
     override fun getShoppingLists(appUser: AppUser, isDone: Boolean?): Set<ShoppingListResponse> {
         val shoppingLists: List<ShoppingList> = if (isDone != null) {
-            shoppingListRepository.findAllByAppUserAndIsDone(appUser, isDone)
+            repository.findAllByAppUserAndIsDone(appUser, isDone)
         } else {
-            shoppingListRepository.findAllByAppUser(appUser)
+            repository.findAllByAppUser(appUser)
         } ?: return emptySet()
 
         val (supermarketResponses, shoppingListItems) = shoppingLists.map { shoppingList ->
@@ -79,37 +78,42 @@ class ShoppingListServiceImpl(
         }.toSet()
     }
 
-
+    @Transactional
     override fun updateShoppingList(
         id: Long,
         updateRequest: ShoppingListUpdateRequest,
         appUser: AppUser
     ): ShoppingListResponse {
-        /*val shoppingList: ShoppingList = validateShoppingList(id, appUser)
-        val updatedSupermarket: Supermarket? =
-            updateRequest.supermarket?.let { supermarketMapper.toEntity(it) }
-        val updatedShoppingListItems: List<ShoppingListItem>? =
-            updateRequest.shoppingListItems?.map { shoppingListItemMapper.toEntity(it) }
-        shoppingList.apply {
-            this.receiptPictureUrl = updateRequest.receiptPictureUrl ?: this.receiptPictureUrl
-            this.supermarket = updatedSupermarket ?: this.supermarket
-            this.shoppingListItems = updatedShoppingListItems ?: this.shoppingListItems
+        val shoppingList = validateShoppingList(id, appUser)
+        var updatedSupermarket: Supermarket? = null
+        if (updateRequest.supermarket != null) {
+            updatedSupermarket = supermarketService.findSupermarketByName(updateRequest.supermarket.name)
         }
-        val entity = shoppingListRepository.save(shoppingList)
-        return shoppingListMapper.toDto(entity)*/
+        var updatedShoppingListItems: List<ShoppingListItem>? = null
+        if (updateRequest.shoppingListItems?.isNotEmpty() != null) {
+            updatedShoppingListItems =
+                shoppingListItemService.updateShoppingListItems(shoppingList, updateRequest.shoppingListItems)
+        }
+        shoppingList.apply {
+            receiptPictureUrl = updateRequest.receiptPictureUrl ?: receiptPictureUrl
+            isDone = updateRequest.isDone ?: isDone
+            supermarket = updatedSupermarket ?: supermarket
+            shoppingListItems = updatedShoppingListItems ?: shoppingListItems
+        }
 
-        return ShoppingListResponse(0, "", false, SupermarketResponse(), emptyList(), 0f)
+        val entity: ShoppingList = repository.save(shoppingList)
+        return generateShoppingListResponse(shoppingList.supermarket!!, shoppingList.shoppingListItems, entity)
     }
 
     @Transactional
     override fun deleteShoppingList(id: Long, appUser: AppUser) {
         val shoppingList = validateShoppingList(id, appUser)
         shoppingListItemService.deleteShoppingListItems(shoppingList.shoppingListItems)
-        shoppingListRepository.delete(shoppingList)
+        repository.delete(shoppingList)
     }
 
     private fun validateShoppingList(id: Long, appUser: AppUser): ShoppingList {
-        val shoppingList = shoppingListRepository.findByIdAndAppUser(id, appUser)
+        val shoppingList = repository.findByIdAndAppUser(id, appUser)
             ?: throw ShoppingListNotFoundException(message = "Shopping list with ID: $id does not exist!")
         return shoppingList
     }
@@ -119,13 +123,16 @@ class ShoppingListServiceImpl(
         shoppingListItems: List<ShoppingListItem>,
         entity: ShoppingList
     ): ShoppingListResponse {
-        val supermarketResponse = supermarketMapper.toDto(supermarket)
-        val shoppingListItemResponses = shoppingListItems.map { shoppingListItemMapper.toDto(it, null) }
-        val shoppingListResponse = shoppingListMapper.toDto(entity, supermarketResponse, shoppingListItemResponses)
+        val supermarketResponse: SupermarketResponse = supermarketMapper.toDto(supermarket)
+        val shoppingListItemResponses: List<ShoppingListItemResponse> = shoppingListItems.map {
+            shoppingListItemMapper.toDto(it, null)
+        }
+        val shoppingListResponse: ShoppingListResponse =
+            shoppingListMapper.toDto(entity, supermarketResponse, shoppingListItemResponses)
         shoppingListItemResponses.forEach { _ ->
-            shoppingListItems.map {
+            shoppingListItems.map { listItem ->
                 shoppingListItemMapper.toDto(
-                    it,
+                    listItem,
                     shoppingListResponse
                 )
             }

@@ -17,4 +17,9 @@ interface ShoppingListItemService {
     ): List<ShoppingListItem>
 
     fun deleteShoppingListItems(shoppingListItems: List<ShoppingListItem>)
+
+    fun updateShoppingListItems(
+        shoppingList: ShoppingList,
+        shoppingListItems: List<ShoppingListItemCreateRequest>
+    ): List<ShoppingListItem>
 }
