@@ -390,6 +390,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+    patch:
+      tags:
+        - grocery-item-resource
+      summary: Update grocery item
+      operationId: updateGroceryItem
+      description: method to update grocery item
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroceryItemUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: grocery item successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroceryItemResponse'
+        '404':
+          description: grocery item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    delete:
+      tags:
+        - grocery-item-resource
+      summary: Delete grocery item
+      operationId: deleteGroceryItem
+      description: method to delete grocery item
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: grocery item successfully deleted
+        '404':
+          description: grocery item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
 components:
   schemas:
     RegisterRequest:
@@ -639,6 +705,14 @@ components:
       required:
         - name
         - category
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the grocery item
+        category:
+          $ref: '#/components/schemas/Category'
+    GroceryItemUpdateRequest:
       type: object
       properties:
         name:
