@@ -390,6 +390,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+    post:
+      tags:
+        - grocery-item-resource
+      summary: Create grocery item
+      operationId: createGroceryItem
+      description: method to create grocery item
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroceryItemCreateRequest'
+        required: true
+      responses:
+        '201':
+          description: grocery item successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroceryItemResponse'
+        '400':
+          description: An grocery item already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/v1/shopping-lists/{listId}/shopping-list-items/{itemId}/grocery-item/{groceryId}:
     patch:
       tags:
         - grocery-item-resource
@@ -456,6 +489,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+
 components:
   schemas:
     RegisterRequest:
