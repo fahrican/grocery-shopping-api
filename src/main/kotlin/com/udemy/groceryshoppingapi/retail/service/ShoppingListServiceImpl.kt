@@ -1,6 +1,8 @@
 package com.udemy.groceryshoppingapi.retail.service
 
+import com.udemy.groceryshoppingapi.dto.GroceryItemCreateRequest
 import com.udemy.groceryshoppingapi.dto.GroceryItemResponse
+import com.udemy.groceryshoppingapi.dto.GroceryItemUpdateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
@@ -27,7 +29,8 @@ class ShoppingListServiceImpl(
     private val supermarketMapper: SupermarketMapper,
     private val supermarketService: SupermarketService,
     private val shoppingListItemMapper: ShoppingListItemMapper,
-    private val shoppingListItemService: ShoppingListItemService
+    private val shoppingListItemService: ShoppingListItemService,
+    private val groceryItemService: GroceryItemService
 ) : ShoppingListService {
 
     @Transactional
@@ -113,13 +116,36 @@ class ShoppingListServiceImpl(
         repository.delete(shoppingList)
     }
 
-    override fun getGroceryItem(shoppingListId: Long, shoppingListItemId: Long, appUser: AppUser): GroceryItemResponse {
-        val shoppingList: ShoppingListResponse = this.getShoppingListById(shoppingListId, appUser)
-        val shoppingListItem: ShoppingListItemResponse = shoppingList.shoppingListItems?.first {
-            it.id == shoppingListItemId
-        } ?: throw BadRequestException("Shopping list item with ID: $shoppingListItemId does not exist!")
-        val groceryItem: GroceryItemResponse =
-            shoppingListItem.groceryItem ?: throw BadRequestException("Grocery item not found!")
+    override fun getGroceryItem(listId: Long, listItemId: Long, appUser: AppUser): GroceryItemResponse {
+        val shoppingListItem: ShoppingListItemResponse = retrieveListItemResponse(listId, appUser, listItemId)
+        val groceryItem: GroceryItemResponse = shoppingListItem.groceryItem
+            ?: throw BadRequestException("Shopping list: $listItemId does not contain a grocery item!")
+        return groceryItem
+    }
+
+    override fun createGroceryItem(
+        listId: Long,
+        listItemId: Long,
+        createReq: GroceryItemCreateRequest,
+        appUser: AppUser
+    ): GroceryItemResponse {
+        val shoppingListItem: ShoppingListItemResponse = retrieveListItemResponse(listId, appUser, listItemId)
+        if (shoppingListItem.groceryItem != null) {
+            throw BadRequestException("Shopping list item with ID: $listItemId already contains a grocery item!")
+        }
+        val groceryItem: GroceryItemResponse = groceryItemService.createGroceryItem(createReq)
+        return groceryItem
+    }
+
+    override fun deleteGroceryItem(grocerId: Long) {
+        groceryItemService.deleteGroceryItem(grocerId)
+    }
+
+    override fun updateGroceryItem(
+        grocerId: Long,
+        updateRequest: GroceryItemUpdateRequest
+    ): GroceryItemResponse {
+        val groceryItem: GroceryItemResponse = groceryItemService.updateGroceryItem(grocerId, updateRequest)
         return groceryItem
     }
 
@@ -149,5 +175,17 @@ class ShoppingListServiceImpl(
             }
         }
         return shoppingListResponse
+    }
+
+    private fun retrieveListItemResponse(
+        listId: Long,
+        appUser: AppUser,
+        listItemId: Long
+    ): ShoppingListItemResponse {
+        val shoppingList: ShoppingListResponse = this.getShoppingListById(listId, appUser)
+        val shoppingListItem: ShoppingListItemResponse = shoppingList.shoppingListItems?.first {
+            it.id == listItemId
+        } ?: throw BadRequestException("Shopping list item with ID: $listItemId does not exist!")
+        return shoppingListItem
     }
 }

@@ -22,9 +22,9 @@ class GroceryItem(
     val id: Long = 0,
 
     @NotBlank
-    val name: String,
+    var name: String,
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    val category: Category = Category.OTHER
+    var category: Category = Category.OTHER
 )
