@@ -637,6 +637,7 @@ components:
         - id
         - quantity
         - price
+        - groceryItem
       type: object
       properties:
         id:

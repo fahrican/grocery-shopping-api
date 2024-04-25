@@ -60,4 +60,8 @@ class ShoppingListItemServiceImpl(
         }
         return repository.saveAll(updatedShoppingListItems)
     }
+
+    override fun getShoppingListItem(id: Long): ShoppingListItem {
+        return repository.findById(id).orElseThrow()
+    }
 }

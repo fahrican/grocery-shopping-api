@@ -1,6 +1,5 @@
 package com.udemy.groceryshoppingapi.retail.service
 
-import com.udemy.groceryshoppingapi.dto.GroceryItemCreateRequest
 import com.udemy.groceryshoppingapi.dto.GroceryItemResponse
 import com.udemy.groceryshoppingapi.dto.GroceryItemUpdateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
@@ -123,28 +122,7 @@ class ShoppingListServiceImpl(
         return groceryItem
     }
 
-    override fun createGroceryItem(
-        listId: Long,
-        listItemId: Long,
-        createReq: GroceryItemCreateRequest,
-        appUser: AppUser
-    ): GroceryItemResponse {
-        val shoppingListItem: ShoppingListItemResponse = retrieveListItemResponse(listId, appUser, listItemId)
-        if (shoppingListItem.groceryItem != null) {
-            throw BadRequestException("Shopping list item with ID: $listItemId already contains a grocery item!")
-        }
-        val groceryItem: GroceryItemResponse = groceryItemService.createGroceryItem(createReq)
-        return groceryItem
-    }
-
-    override fun deleteGroceryItem(grocerId: Long) {
-        groceryItemService.deleteGroceryItem(grocerId)
-    }
-
-    override fun updateGroceryItem(
-        grocerId: Long,
-        updateRequest: GroceryItemUpdateRequest
-    ): GroceryItemResponse {
+    override fun updateGroceryItem(grocerId: Long, updateRequest: GroceryItemUpdateRequest): GroceryItemResponse {
         val groceryItem: GroceryItemResponse = groceryItemService.updateGroceryItem(grocerId, updateRequest)
         return groceryItem
     }

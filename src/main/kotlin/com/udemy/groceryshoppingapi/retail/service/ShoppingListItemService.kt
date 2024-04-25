@@ -22,4 +22,6 @@ interface ShoppingListItemService {
         shoppingList: ShoppingList,
         shoppingListItems: List<ShoppingListItemCreateRequest>
     ): List<ShoppingListItem>
+
+    fun getShoppingListItem(id: Long): ShoppingListItem
 }
