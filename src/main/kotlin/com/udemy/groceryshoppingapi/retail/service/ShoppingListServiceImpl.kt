@@ -3,7 +3,9 @@ package com.udemy.groceryshoppingapi.retail.service
 import com.udemy.groceryshoppingapi.dto.GroceryItemResponse
 import com.udemy.groceryshoppingapi.dto.GroceryItemUpdateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
+import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemResponse
+import com.udemy.groceryshoppingapi.dto.ShoppingListItemUpdateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
 import com.udemy.groceryshoppingapi.dto.SupermarketResponse
@@ -133,6 +135,38 @@ class ShoppingListServiceImpl(
 
     override fun getShoppingListItem(listId: Long, itemId: Long, appUser: AppUser): ShoppingListItemResponse {
         return retrieveListItemResponse(listId, appUser, itemId)
+    }
+
+    override fun createShoppingListItem(
+        listId: Long,
+        createRequest: ShoppingListItemCreateRequest,
+        appUser: AppUser
+    ): ShoppingListItemResponse {
+        val shoppingList: ShoppingList = validateShoppingList(listId, appUser)
+        val shoppingListItem: ShoppingListItem = shoppingListItemService.createShoppingListItem(
+            createRequest,
+            shoppingList
+        )
+        return shoppingListItemMapper.toDto(shoppingListItem)
+    }
+
+    override fun deleteShoppingListItem(listId: Long, itemId: Long, appUser: AppUser) {
+        val shoppingList: ShoppingList = validateShoppingList(listId, appUser)
+        shoppingListItemService.deleteShoppingListItem(itemId)
+    }
+
+    override fun updateShoppingListItem(
+        listId: Long,
+        itemId: Long,
+        updateRequest: ShoppingListItemUpdateRequest,
+        appUser: AppUser
+    ): ShoppingListItemResponse {
+        val shoppingList: ShoppingList = validateShoppingList(listId, appUser)
+        val shoppingListItem: ShoppingListItem = shoppingListItemService.updateShoppingListItem(
+            itemId,
+            updateRequest
+        )
+        return shoppingListItemMapper.toDto(shoppingListItem)
     }
 
     private fun validateShoppingList(id: Long, appUser: AppUser): ShoppingList {

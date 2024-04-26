@@ -1,6 +1,8 @@
 package com.udemy.groceryshoppingapi.retail.service
 
+import com.udemy.groceryshoppingapi.dto.Category
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
+import com.udemy.groceryshoppingapi.dto.ShoppingListItemUpdateRequest
 import com.udemy.groceryshoppingapi.retail.entity.GroceryItem
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
@@ -63,5 +65,26 @@ class ShoppingListItemServiceImpl(
 
     override fun getShoppingListItem(id: Long): ShoppingListItem {
         return repository.findById(id).orElseThrow()
+    }
+
+    override fun deleteShoppingListItem(id: Long) {
+        repository.deleteById(id)
+    }
+
+    override fun updateShoppingListItem(id: Long, updateRequest: ShoppingListItemUpdateRequest): ShoppingListItem {
+        val shoppingListItem = repository.findById(id).orElseThrow()
+        var updatedGroceryItem: GroceryItem? = null
+        if (updateRequest.groceryItem?.name != null || updateRequest.groceryItem?.category != null) {
+            updatedGroceryItem = GroceryItem(
+                name = updateRequest.groceryItem.name ?: "",
+                category = updateRequest.groceryItem.category ?: Category.OTHER
+            )
+        }
+        shoppingListItem.apply {
+            quantity = updateRequest.quantity ?: quantity
+            price = updateRequest.price ?: price
+            groceryItem = updatedGroceryItem ?: groceryItem
+        }
+        return repository.save(shoppingListItem)
     }
 }

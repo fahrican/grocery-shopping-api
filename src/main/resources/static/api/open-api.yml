@@ -423,7 +423,7 @@ paths:
     get:
       tags:
         - shopping-list-item-resource
-      summary: Get shopping list item
+      summary: Get shopping list item by its ID
       operationId: getShoppingListItem
       description: method to fetch shopping list item
       parameters:
