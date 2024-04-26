@@ -131,6 +131,10 @@ class ShoppingListServiceImpl(
         return shoppingList.shoppingListItems.map { shoppingListItemMapper.toDto(it) }.toSet()
     }
 
+    override fun getShoppingListItem(listId: Long, itemId: Long, appUser: AppUser): ShoppingListItemResponse {
+        return retrieveListItemResponse(listId, appUser, itemId)
+    }
+
     private fun validateShoppingList(id: Long, appUser: AppUser): ShoppingList {
         val shoppingList = repository.findByIdAndAppUser(id, appUser)
             ?: throw ShoppingListNotFoundException(message = "Shopping list with ID: $id does not exist!")

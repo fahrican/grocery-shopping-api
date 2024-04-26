@@ -387,6 +387,139 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiError'
 
+    post:
+      tags:
+        - shopping-list-item-resource
+      summary: Create a new shopping list item
+      operationId: createShoppingListItem
+      description: method to create a new shopping list item or inform about invalid input
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingListItemCreateRequest'
+        required: true
+      responses:
+        '201':
+          description: shopping list item successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingListItemResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /api/v1/shopping-lists/{listId}/shopping-list-items/{itemId}:
+    get:
+      tags:
+        - shopping-list-item-resource
+      summary: Get shopping list item
+      operationId: getShoppingListItem
+      description: method to fetch shopping list item
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Found the shopping list item by the supplied IDs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingListItemResponse'
+        '404':
+          description: shopping list item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    delete:
+      tags:
+        - shopping-list-item-resource
+      summary: Delete a shopping list item by its ID
+      operationId: deleteShoppingListItem
+      description: method to delete a shopping list item by its ID or inform does not exist
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: shopping list item successfully deleted
+        '404':
+          description: shopping list item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+    patch:
+      tags:
+        - shopping-list-item-resource
+      summary: Update a shopping list item
+      operationId: updateShoppingListItem
+      description: method to update a shopping list item or inform does not exist
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShoppingListItemUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: shopping list item successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingListItemResponse'
+        '404':
+          description: shopping list item not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
   /api/v1/shopping-lists/{listId}/shopping-list-items/{itemId}/grocery-item:
     get:
       tags:
@@ -629,6 +762,20 @@ components:
         groceryItem:
           type: object
           $ref: '#/components/schemas/GroceryItemCreateRequest'
+          nullable: true
+    ShoppingListItemUpdateRequest:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          description: Quantity of the grocery item
+        price:
+          type: number
+          format: float
+          description: Price of the grocery item
+        groceryItem:
+          type: object
+          $ref: '#/components/schemas/GroceryItemUpdateRequest'
           nullable: true
     SupermarketResponse:
       type: object
