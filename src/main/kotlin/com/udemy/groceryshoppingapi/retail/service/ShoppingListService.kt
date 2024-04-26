@@ -3,6 +3,7 @@ package com.udemy.groceryshoppingapi.retail.service
 import com.udemy.groceryshoppingapi.dto.GroceryItemResponse
 import com.udemy.groceryshoppingapi.dto.GroceryItemUpdateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
+import com.udemy.groceryshoppingapi.dto.ShoppingListItemResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
 import com.udemy.groceryshoppingapi.user.entity.AppUser
@@ -22,4 +23,6 @@ interface ShoppingListService {
     fun getGroceryItem(listId: Long, listItemId: Long, appUser: AppUser): GroceryItemResponse
 
     fun updateGroceryItem(grocerId: Long, updateRequest: GroceryItemUpdateRequest): GroceryItemResponse
+
+    fun getShoppingListItems(listId: Long, appUser: AppUser): Set<ShoppingListItemResponse>
 }

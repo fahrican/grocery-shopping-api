@@ -56,7 +56,7 @@ class ShoppingListServiceImpl(
         val supermarket = shoppingList.supermarket?.let { supermarketMapper.toDto(it) }
             ?: throw SupermarketException("There is no supermarket associated with this shopping list!")
         val shoppingListItems: List<ShoppingListItemResponse> = shoppingList.shoppingListItems.map {
-            shoppingListItemMapper.toDto(it, null)
+            shoppingListItemMapper.toDto(it)
         }
         return shoppingListMapper.toDto(shoppingList, supermarket, shoppingListItems)
     }
@@ -72,7 +72,7 @@ class ShoppingListServiceImpl(
             val supermarketResponse =
                 shoppingList.supermarket?.let { supermarketMapper.toDto(it) } ?: SupermarketResponse()
             val shoppingListItemResponses =
-                shoppingList.shoppingListItems.map { shoppingListItemMapper.toDto(it, null) }
+                shoppingList.shoppingListItems.map { shoppingListItemMapper.toDto(it) }
             Pair(supermarketResponse, shoppingListItemResponses)
         }.unzip()
 
@@ -118,13 +118,17 @@ class ShoppingListServiceImpl(
     override fun getGroceryItem(listId: Long, listItemId: Long, appUser: AppUser): GroceryItemResponse {
         val shoppingListItem: ShoppingListItemResponse = retrieveListItemResponse(listId, appUser, listItemId)
         val groceryItem: GroceryItemResponse = shoppingListItem.groceryItem
-            ?: throw BadRequestException("Shopping list: $listItemId does not contain a grocery item!")
         return groceryItem
     }
 
     override fun updateGroceryItem(grocerId: Long, updateRequest: GroceryItemUpdateRequest): GroceryItemResponse {
         val groceryItem: GroceryItemResponse = groceryItemService.updateGroceryItem(grocerId, updateRequest)
         return groceryItem
+    }
+
+    override fun getShoppingListItems(listId: Long, appUser: AppUser): Set<ShoppingListItemResponse> {
+        val shoppingList: ShoppingList = validateShoppingList(listId, appUser)
+        return shoppingList.shoppingListItems.map { shoppingListItemMapper.toDto(it) }.toSet()
     }
 
     private fun validateShoppingList(id: Long, appUser: AppUser): ShoppingList {
@@ -140,16 +144,13 @@ class ShoppingListServiceImpl(
     ): ShoppingListResponse {
         val supermarketResponse: SupermarketResponse = supermarketMapper.toDto(supermarket)
         val shoppingListItemResponses: List<ShoppingListItemResponse> = shoppingListItems.map {
-            shoppingListItemMapper.toDto(it, null)
+            shoppingListItemMapper.toDto(it)
         }
         val shoppingListResponse: ShoppingListResponse =
             shoppingListMapper.toDto(entity, supermarketResponse, shoppingListItemResponses)
         shoppingListItemResponses.forEach { _ ->
             shoppingListItems.map { listItem ->
-                shoppingListItemMapper.toDto(
-                    listItem,
-                    shoppingListResponse
-                )
+                shoppingListItemMapper.toDto(listItem)
             }
         }
         return shoppingListResponse
