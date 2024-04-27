@@ -886,11 +886,6 @@ components:
     ShoppingListUpdateRequest:
       type: object
       properties:
-        totalAmount:
-          type: number
-          format: float
-          nullable: true
-          description: Total monetary amount of the shopping list (optional).
         receiptPictureUrl:
           type: string
           format: string
