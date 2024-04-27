@@ -92,20 +92,13 @@ class ShoppingListServiceImpl(
         val shoppingList = validateShoppingList(id, appUser)
         var updatedSupermarket: Supermarket? = null
         if (updateRequest.supermarket != null) {
-            updatedSupermarket = supermarketService.findSupermarketByName(updateRequest.supermarket.name)
-        }
-        var updatedShoppingListItems: List<ShoppingListItem>? = null
-        if (updateRequest.shoppingListItems?.isNotEmpty() != null) {
-            updatedShoppingListItems =
-                shoppingListItemService.updateShoppingListItems(shoppingList, updateRequest.shoppingListItems)
+            updatedSupermarket = updateRequest.supermarket.name?.let { supermarketService.findSupermarketByName(it) }
         }
         shoppingList.apply {
             receiptPictureUrl = updateRequest.receiptPictureUrl ?: receiptPictureUrl
             isDone = updateRequest.isDone ?: isDone
             supermarket = updatedSupermarket ?: supermarket
-            shoppingListItems = updatedShoppingListItems ?: shoppingListItems
         }
-
         val entity: ShoppingList = repository.save(shoppingList)
         return generateShoppingListResponse(shoppingList.supermarket!!, shoppingList.shoppingListItems, entity)
     }
@@ -150,9 +143,12 @@ class ShoppingListServiceImpl(
         return shoppingListItemMapper.toDto(shoppingListItem)
     }
 
+    @Transactional
     override fun deleteShoppingListItem(listId: Long, itemId: Long, appUser: AppUser) {
-        val shoppingList: ShoppingList = validateShoppingList(listId, appUser)
+        val shoppingListItem: ShoppingListItemResponse = retrieveListItemResponse(listId, appUser, itemId)
+        val groceryItem: GroceryItemResponse = shoppingListItem.groceryItem
         shoppingListItemService.deleteShoppingListItem(itemId)
+        groceryItem.id?.let { groceryItemService.deleteGroceryItem(it) }
     }
 
     override fun updateShoppingListItem(
@@ -161,7 +157,6 @@ class ShoppingListServiceImpl(
         updateRequest: ShoppingListItemUpdateRequest,
         appUser: AppUser
     ): ShoppingListItemResponse {
-        val shoppingList: ShoppingList = validateShoppingList(listId, appUser)
         val shoppingListItem: ShoppingListItem = shoppingListItemService.updateShoppingListItem(
             itemId,
             updateRequest
@@ -200,9 +195,7 @@ class ShoppingListServiceImpl(
         listItemId: Long
     ): ShoppingListItemResponse {
         val shoppingList: ShoppingListResponse = this.getShoppingListById(listId, appUser)
-        val shoppingListItem: ShoppingListItemResponse = shoppingList.shoppingListItems?.first {
-            it.id == listItemId
-        } ?: throw BadRequestException("Shopping list item with ID: $listItemId does not exist!")
-        return shoppingListItem
+        return shoppingList.shoppingListItems?.first { it.id == listItemId }
+            ?: throw BadRequestException("Shopping list item with ID: $listItemId does not exist!")
     }
 }

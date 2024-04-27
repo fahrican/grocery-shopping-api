@@ -8,12 +8,10 @@ import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
 import com.udemy.groceryshoppingapi.retail.repository.ShoppingListItemRepository
 import com.udemy.groceryshoppingapi.retail.util.GroceryItemMapper
-import com.udemy.groceryshoppingapi.retail.util.ShoppingListItemMapper
 import org.springframework.stereotype.Service
 
 @Service
 class ShoppingListItemServiceImpl(
-    private val mapper: ShoppingListItemMapper,
     private val repository: ShoppingListItemRepository,
     private val groceryItemMapper: GroceryItemMapper,
     private val groceryItemService: GroceryItemService
@@ -47,20 +45,6 @@ class ShoppingListItemServiceImpl(
         if (groceryItems.isNotEmpty()) {
             groceryItemService.deleteGroceryItems(groceryItems)
         }
-    }
-
-    override fun updateShoppingListItems(
-        shoppingList: ShoppingList,
-        shoppingListItems: List<ShoppingListItemCreateRequest>
-    ): List<ShoppingListItem> {
-        val updatedShoppingListItems: MutableList<ShoppingListItem> = mutableListOf()
-        repository.deleteAll(shoppingList.shoppingListItems)
-        shoppingListItems.forEach {
-            val groceryItem = groceryItemMapper.toEntity(it.groceryItem)
-            val shoppingListItem = mapper.toEntity(it, shoppingList, groceryItem)
-            updatedShoppingListItems.add(shoppingListItem)
-        }
-        return repository.saveAll(updatedShoppingListItems)
     }
 
     override fun getShoppingListItem(id: Long): ShoppingListItem {

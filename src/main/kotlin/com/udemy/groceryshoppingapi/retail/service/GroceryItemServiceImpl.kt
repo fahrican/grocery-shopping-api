@@ -9,8 +9,11 @@ import com.udemy.groceryshoppingapi.retail.util.GroceryItemMapper
 import org.springframework.stereotype.Service
 
 @Service
-class GroceryItemServiceImpl(private val repository: GroceryItemRepository, private val mapper: GroceryItemMapper) :
-    GroceryItemService {
+class GroceryItemServiceImpl(
+    private val repository: GroceryItemRepository,
+    private val mapper: GroceryItemMapper
+) : GroceryItemService {
+
     override fun deleteGroceryItems(items: List<GroceryItem>) {
         repository.deleteAll(items)
     }

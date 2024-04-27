@@ -793,6 +793,11 @@ components:
       properties:
         name:
           $ref: '#/components/schemas/Hypermarket'
+    SupermarketUpdateRequest:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/Hypermarket'
     Category:
       type: string
       enum:
@@ -897,15 +902,9 @@ components:
           description: Status indicating if the shopping list is completed (optional).
         supermarket:
           type: object
-          $ref: '#/components/schemas/SupermarketCreateRequest'
+          $ref: '#/components/schemas/SupermarketUpdateRequest'
           nullable: true
           description: Details of the supermarket associated with the shopping list (optional).
-        shoppingListItems:
-          type: array
-          items:
-            $ref: '#/components/schemas/ShoppingListItemCreateRequest'
-          nullable: true
-          description: List of items included in the shopping list (optional).
     ApiError:
       required:
         - code
