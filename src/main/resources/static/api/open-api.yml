@@ -773,10 +773,6 @@ components:
           type: number
           format: float
           description: Price of the grocery item
-        groceryItem:
-          type: object
-          $ref: '#/components/schemas/GroceryItemUpdateRequest'
-          nullable: true
     SupermarketResponse:
       type: object
       properties:
