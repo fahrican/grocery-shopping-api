@@ -10,6 +10,7 @@ import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
 import com.udemy.groceryshoppingapi.dto.SupermarketResponse
 import com.udemy.groceryshoppingapi.error.BadRequestException
+import com.udemy.groceryshoppingapi.error.ShoppingListItemNotFoundException
 import com.udemy.groceryshoppingapi.error.ShoppingListNotFoundException
 import com.udemy.groceryshoppingapi.error.SupermarketException
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
@@ -147,7 +148,7 @@ class ShoppingListServiceImpl(
     override fun deleteShoppingListItem(listId: Long, itemId: Long, appUser: AppUser) {
         val shoppingList = repository.findByIdAndAppUser(listId, appUser)
         val listItem: ShoppingListItem = shoppingList?.shoppingListItems?.find { it.id == itemId }
-            ?: throw BadRequestException(message = "Shopping list item with ID: $itemId does not exist!")
+            ?: throw ShoppingListItemNotFoundException(message = "Shopping list item with ID: $itemId does not exist!")
         shoppingListItemService.deleteShoppingListItem(itemId)
         listItem.groceryItem?.let { groceryItemService.deleteGroceryItem(it.id) }
     }

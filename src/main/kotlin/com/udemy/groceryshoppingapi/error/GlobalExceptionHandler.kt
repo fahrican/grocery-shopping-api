@@ -18,7 +18,8 @@ class GlobalExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(
         UsernameNotFoundException::class,
         UserNotFoundException::class,
-        ShoppingListNotFoundException::class
+        ShoppingListNotFoundException::class,
+        ShoppingListItemNotFoundException::class,
     )
     fun handleNotFoundException(exception: RuntimeException): ResponseEntity<ApiError> =
         buildResponseEntity(HttpStatus.NOT_FOUND, exception.message)
@@ -63,5 +64,7 @@ class TokenExpiredException(message: String) : RuntimeException(message)
 class JwtKeyException(message: String) : IllegalStateException(message)
 
 class ShoppingListNotFoundException(message: String) : RuntimeException(message)
+
+class ShoppingListItemNotFoundException(message: String) : RuntimeException(message)
 
 class SupermarketException(message: String) : RuntimeException(message)
