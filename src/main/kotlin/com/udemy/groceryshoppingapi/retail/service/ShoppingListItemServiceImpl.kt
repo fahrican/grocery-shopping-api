@@ -51,8 +51,8 @@ class ShoppingListItemServiceImpl(
         return repository.findById(id).orElseThrow()
     }
 
-    override fun deleteShoppingListItem(id: Long) {
-        repository.deleteById(id)
+    override fun deleteShoppingListItem(entity: ShoppingListItem) {
+        repository.deleteShoppingListItem(entity.id)
     }
 
     override fun updateShoppingListItem(id: Long, updateRequest: ShoppingListItemUpdateRequest): ShoppingListItem {

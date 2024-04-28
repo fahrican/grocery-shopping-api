@@ -28,8 +28,8 @@ class GroceryItemServiceImpl(
         return mapper.toDto(item)
     }
 
-    override fun deleteGroceryItem(id: Long) {
-        repository.deleteById(id)
+    override fun deleteGroceryItem(entity: GroceryItem) {
+        repository.deleteGroceryItem(entity.id)
     }
 
     override fun updateGroceryItem(grocerId: Long, updateRequest: GroceryItemUpdateRequest): GroceryItemResponse {

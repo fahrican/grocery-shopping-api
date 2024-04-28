@@ -145,10 +145,13 @@ class ShoppingListServiceImpl(
 
     @Transactional
     override fun deleteShoppingListItem(listId: Long, itemId: Long, appUser: AppUser) {
-        val shoppingListItem: ShoppingListItemResponse = retrieveListItemResponse(listId, appUser, itemId)
-        val groceryItem: GroceryItemResponse = shoppingListItem.groceryItem
-        shoppingListItemService.deleteShoppingListItem(itemId)
-        groceryItem.id?.let { groceryItemService.deleteGroceryItem(it) }
+        val shoppingList = repository.findByIdAndAppUser(listId, appUser)
+        val listItem: ShoppingListItem = shoppingList?.shoppingListItems?.find { it.id == itemId }
+            ?: throw BadRequestException(message = "Shopping list item with ID: $itemId does not exist!")
+        shoppingListItemService.deleteShoppingListItem(listItem)
+        if (listItem.groceryItem != null) {
+            groceryItemService.deleteGroceryItem(listItem.groceryItem!!)
+        }
     }
 
     override fun updateShoppingListItem(
