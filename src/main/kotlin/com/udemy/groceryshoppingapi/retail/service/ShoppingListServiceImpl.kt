@@ -116,8 +116,8 @@ class ShoppingListServiceImpl(
         return groceryItem
     }
 
-    override fun updateGroceryItem(grocerId: Long, updateRequest: GroceryItemUpdateRequest): GroceryItemResponse {
-        val groceryItem: GroceryItemResponse = groceryItemService.updateGroceryItem(grocerId, updateRequest)
+    override fun updateGroceryItem(groceryId: Long, updateRequest: GroceryItemUpdateRequest): GroceryItemResponse {
+        val groceryItem: GroceryItemResponse = groceryItemService.updateGroceryItem(groceryId, updateRequest)
         return groceryItem
     }
 

@@ -24,7 +24,7 @@ interface ShoppingListService {
 
     fun getGroceryItem(listId: Long, listItemId: Long, appUser: AppUser): GroceryItemResponse
 
-    fun updateGroceryItem(grocerId: Long, updateRequest: GroceryItemUpdateRequest): GroceryItemResponse
+    fun updateGroceryItem(groceryId: Long, updateRequest: GroceryItemUpdateRequest): GroceryItemResponse
 
     fun getShoppingListItems(listId: Long, appUser: AppUser): Set<ShoppingListItemResponse>
 

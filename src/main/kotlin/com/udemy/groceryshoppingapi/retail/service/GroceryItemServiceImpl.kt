@@ -38,6 +38,7 @@ class GroceryItemServiceImpl(
             groceryItem.name = updateRequest.name ?: name
             groceryItem.category = updateRequest.category ?: category
         }
-        return mapper.toDto(repository.save(groceryItem))
+        val updatedGrocerItem: GroceryItem = repository.save(groceryItem)
+        return mapper.toDto(updatedGrocerItem)
     }
 }
