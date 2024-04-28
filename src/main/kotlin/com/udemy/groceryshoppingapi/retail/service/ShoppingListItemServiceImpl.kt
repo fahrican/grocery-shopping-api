@@ -60,6 +60,15 @@ class ShoppingListItemServiceImpl(
             quantity = updateRequest.quantity ?: quantity
             price = updateRequest.price ?: price
         }
+        val groceryId = shoppingListItem.groceryItem?.id
+        if (groceryId != null) {
+            updateRequest.groceryItem?.let {
+                groceryItemService.updateGroceryItem(
+                    groceryId,
+                    updateRequest.groceryItem
+                )
+            }
+        }
         return repository.save(shoppingListItem)
     }
 }
