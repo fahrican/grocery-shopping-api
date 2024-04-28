@@ -21,7 +21,7 @@ interface ShoppingListItemService {
 
     fun getShoppingListItem(id: Long): ShoppingListItem
 
-    fun deleteShoppingListItem(entity: ShoppingListItem)
+    fun deleteShoppingListItem(id: Long)
 
     fun updateShoppingListItem(id: Long, updateRequest: ShoppingListItemUpdateRequest): ShoppingListItem
 }

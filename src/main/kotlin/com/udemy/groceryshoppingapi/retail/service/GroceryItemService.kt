@@ -11,7 +11,7 @@ interface GroceryItemService {
 
     fun createGroceryItem(createReq: GroceryItemCreateRequest): GroceryItemResponse
 
-    fun deleteGroceryItem(entity: GroceryItem)
+    fun deleteGroceryItem(id: Long)
 
     fun updateGroceryItem(grocerId: Long, updateRequest: GroceryItemUpdateRequest): GroceryItemResponse
 }
