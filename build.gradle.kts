@@ -43,6 +43,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:$jwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:$jwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jwtVersion")
+    runtimeOnly("com.h2database:h2:2.2.222")
 
     // Database
     runtimeOnly("org.postgresql:postgresql")
