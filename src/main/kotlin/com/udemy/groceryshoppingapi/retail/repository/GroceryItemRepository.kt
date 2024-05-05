@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface GroceryItemRepository : JpaRepository<GroceryItem, Long> {
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("delete from GroceryItem g where g.id = ?1")
     fun deleteGroceryItem(id: Long)
 }
