@@ -40,7 +40,7 @@ class GroceryItemRepositoryIT @Autowired constructor(
     }
 
     @Test
-    fun `when grocery item gets persisted then check for an error`() {
+    fun `when grocery item gets deleted then check amount of items in repository`() {
         val secondGroceryItem = GroceryItem(name = "Banana", category = Category.FRUITS)
         entityManager.persist(secondGroceryItem)
 
