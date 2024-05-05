@@ -66,9 +66,9 @@ class ShoppingListServiceImpl(
 
     override fun getShoppingLists(appUser: AppUser, isDone: Boolean?): Set<ShoppingListResponse> {
         val shoppingLists: List<ShoppingList> = if (isDone != null) {
-            repository.findAllByAppUserAndIsDone(appUser, isDone)
+            repository.findAllByUserAndIsDone(appUser, isDone)
         } else {
-            repository.findAllByAppUser(appUser)
+            repository.findAllByUser(appUser)
         } ?: return emptySet()
 
         val (supermarketResponses, shoppingListItems) = shoppingLists.map { shoppingList ->
@@ -146,7 +146,7 @@ class ShoppingListServiceImpl(
 
     @Transactional
     override fun deleteShoppingListItem(listId: Long, itemId: Long, appUser: AppUser) {
-        val shoppingList = repository.findByIdAndAppUser(listId, appUser)
+        val shoppingList = repository.findByIdAndUser(listId, appUser)
         val listItem: ShoppingListItem = shoppingList?.shoppingListItems?.find { it.id == itemId }
             ?: throw ShoppingListItemNotFoundException(message = "Shopping list item with ID: $itemId does not exist!")
         shoppingListItemService.deleteShoppingListItem(itemId)
@@ -167,7 +167,7 @@ class ShoppingListServiceImpl(
     }
 
     private fun validateShoppingList(id: Long, appUser: AppUser): ShoppingList {
-        val shoppingList = repository.findByIdAndAppUser(id, appUser)
+        val shoppingList = repository.findByIdAndUser(id, appUser)
             ?: throw ShoppingListNotFoundException(message = "Shopping list with ID: $id does not exist!")
         return shoppingList
     }
