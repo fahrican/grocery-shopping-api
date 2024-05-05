@@ -1,4 +1,4 @@
-package com.udemy.groceryshoppingapi.user.repository
+package com.udemy.groceryshoppingapi.user.service
 
 
 import com.udemy.groceryshoppingapi.auth.service.ClientSessionService
@@ -8,7 +8,7 @@ import com.udemy.groceryshoppingapi.dto.UserPasswordUpdateRequest
 import com.udemy.groceryshoppingapi.error.BadRequestException
 import com.udemy.groceryshoppingapi.error.PasswordMismatchException
 import com.udemy.groceryshoppingapi.user.entity.AppUser
-import com.udemy.groceryshoppingapi.user.service.AppUserService
+import com.udemy.groceryshoppingapi.user.repository.AppUserRepository
 import com.udemy.groceryshoppingapi.user.util.UserInfoMapper
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
