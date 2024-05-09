@@ -32,7 +32,7 @@ class ShoppingListItemMapper(
         val entity = ShoppingListItem(
             quantity = request.quantity,
             price = request.price,
-            shoppingList = shoppingList, // todo: check this
+            shoppingList = shoppingList,
             groceryItem = groceryItemEntity
         )
         return entity

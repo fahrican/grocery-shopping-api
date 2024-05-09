@@ -22,8 +22,8 @@ class ShoppingListMapper {
             entity.id,
             entity.receiptPictureUrl,
             entity.isDone,
-            supermarket = supermarket, // todo: check this
-            shoppingListItems = shoppingListItems, // todo: check this
+            supermarket = supermarket,
+            shoppingListItems = shoppingListItems,
             entity.getTotalAmount()
         )
         return dto
@@ -38,8 +38,8 @@ class ShoppingListMapper {
         val entity = ShoppingList(
             receiptPictureUrl = request.receiptPictureUrl,
             isDone = false,
-            supermarket = supermarket, // todo: check this
-            shoppingListItems = shoppingListItems, // todo: check this
+            supermarket = supermarket,
+            shoppingListItems = shoppingListItems,
             appUser = appUser
         )
         return entity
