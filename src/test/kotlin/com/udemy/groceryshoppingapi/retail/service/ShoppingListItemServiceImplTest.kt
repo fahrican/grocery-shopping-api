@@ -111,21 +111,14 @@ class ShoppingListItemServiceImplTest {
     }
 
     @Test
-    fun `updateShoppingListItem updates and saves shopping list item`() {
+    fun `when update shopping list item is called then check the properties of the updated item`() {
         val id = 1L
         val groceryItemReq = GroceryItemUpdateRequest(name = "Milk", category = Category.DAIRY)
         val groceryItem = groceryItemMapper.toEntity(GroceryItemCreateRequest(name = "Milk", category = Category.DAIRY))
         val existingItem = ShoppingListItem(id, 5, 2.50F, null, groceryItem)
         val updateRequest = ShoppingListItemUpdateRequest(10, 5.00F, groceryItem = groceryItemReq)
-        val updatedShoppingListItem = ShoppingListItem(
-            id,
-            quantity = updateRequest.quantity!!,
-            price = updateRequest.price!!,
-            shoppingList = null,
-            groceryItem = groceryItem
-        )
         every { mockRepository.findById(id) } returns Optional.of(existingItem)
-        every { mockRepository.save(any()) } returns updatedShoppingListItem
+        every { mockRepository.save(any()) } answers { firstArg() }
 
         val actualResult: ShoppingListItem = objectUnderTest.updateShoppingListItem(id, updateRequest)
 
