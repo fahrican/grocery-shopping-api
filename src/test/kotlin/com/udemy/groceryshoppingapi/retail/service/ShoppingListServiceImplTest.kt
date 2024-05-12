@@ -56,6 +56,14 @@ class ShoppingListServiceImplTest {
     private val supermarket = Supermarket(name = Hypermarket.HOFER)
     private val shoppingListItem = ShoppingListItem(quantity = 5, price = 10.0F)
     private val id = 1L
+    private val shoppingList = ShoppingList(
+        id = id,
+        receiptPictureUrl = null,
+        isDone = false,
+        appUser = appUser,
+        supermarket = supermarket,
+        shoppingListItems = mutableListOf(shoppingListItem)
+    )
 
     @Test
     fun `when create shopping list is called then expect shopping list got created`() {
@@ -114,14 +122,7 @@ class ShoppingListServiceImplTest {
 
     @Test
     fun `when shopping list by id is called then check for response properties`() {
-        val shoppingList = ShoppingList(
-            id = id,
-            receiptPictureUrl = null,
-            isDone = false,
-            appUser = appUser,
-            supermarket = supermarket,
-            shoppingListItems = mutableListOf(shoppingListItem)
-        )
+
         every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
 
         val actualResult: ShoppingListResponse = objectUnderTest.getShoppingListById(id, appUser)
@@ -158,5 +159,50 @@ class ShoppingListServiceImplTest {
             assertThrows<ShoppingListNotFoundException> { objectUnderTest.getShoppingListById(id, appUser) }
 
         assertEquals("Shopping list with ID: $id does not exist!", actualResult.message)
+    }
+
+    @Test
+    fun `when get shopping lists with is done to null is called then check for response properties`() {
+        val shoppingLists = mutableListOf(shoppingList)
+        every { mockRepository.findAllByUser(any()) } returns shoppingLists
+        every { mockRepository.save(any()) } returns shoppingList
+
+        val actualResult: Set<ShoppingListResponse> = objectUnderTest.getShoppingLists(appUser, null)
+
+        assertEquals(shoppingLists.size, actualResult.size)
+        assertEquals(shoppingLists.first().isDone, actualResult.first().isDone)
+        assertEquals(shoppingLists.first().receiptPictureUrl, actualResult.first().receiptPictureUrl)
+        assertEquals(shoppingLists.first().supermarket?.name, actualResult.first().supermarket?.name)
+        assertEquals(shoppingLists.first().shoppingListItems.size, actualResult.first().shoppingListItems?.size)
+        assertEquals(shoppingLists.first().getTotalAmount(), actualResult.first().totalAmount)
+        verify { mockRepository.findAllByUser(any()) }
+    }
+
+    @Test
+    fun `when get shopping lists with is done to null is called then expect empty set`() {
+        every { mockRepository.findAllByUser(any()) } returns null
+        every { mockRepository.save(any()) } returns shoppingList
+
+        val actualResult: Set<ShoppingListResponse> = objectUnderTest.getShoppingLists(appUser, null)
+
+        assertEquals(emptySet<ShoppingList>(), actualResult)
+        verify { mockRepository.findAllByUser(any()) }
+    }
+
+    @Test
+    fun `when get shopping lists with is done to false is called then check for response properties`() {
+        val shoppingLists = mutableListOf(shoppingList)
+        every { mockRepository.findAllByUserAndIsDone(any(), any()) } returns shoppingLists
+        every { mockRepository.save(any()) } returns shoppingList
+
+        val actualResult: Set<ShoppingListResponse> = objectUnderTest.getShoppingLists(appUser, false)
+
+        assertEquals(shoppingLists.size, actualResult.size)
+        assertEquals(shoppingLists.first().isDone, actualResult.first().isDone)
+        assertEquals(shoppingLists.first().receiptPictureUrl, actualResult.first().receiptPictureUrl)
+        assertEquals(shoppingLists.first().supermarket?.name, actualResult.first().supermarket?.name)
+        assertEquals(shoppingLists.first().shoppingListItems.size, actualResult.first().shoppingListItems?.size)
+        assertEquals(shoppingLists.first().getTotalAmount(), actualResult.first().totalAmount)
+        verify { mockRepository.findAllByUserAndIsDone(any(), any()) }
     }
 }
