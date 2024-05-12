@@ -55,23 +55,8 @@ class ShoppingListServiceImpl(
     }
 
     override fun getShoppingLists(appUser: AppUser, isDone: Boolean?): Set<ShoppingListResponse> {
-        val shoppingLists: List<ShoppingList> = if (isDone != null) {
-            repository.findAllByUserAndIsDone(appUser, isDone)
-        } else {
-            repository.findAllByUser(appUser)
-        } ?: return emptySet()
-
-        val (supermarketResponses, shoppingListItems) = shoppingLists.map { shoppingList ->
-            val supermarketResponse =
-                shoppingList.supermarket?.let { supermarketMapper.toDto(it) } ?: SupermarketResponse()
-            val shoppingListItemResponses =
-                shoppingList.shoppingListItems.map { shoppingListItemMapper.toDto(it) }
-            Pair(supermarketResponse, shoppingListItemResponses)
-        }.unzip()
-
-        return shoppingLists.map {
-            shoppingListMapper.toDto(it, supermarketResponses[shoppingLists.indexOf(it)], shoppingListItems.flatten())
-        }.toSet()
+        val shoppingLists = fetchShoppingLists(appUser, isDone)
+        return shoppingLists.map(this::mapToShoppingListResponse).toSet()
     }
 
     @Transactional
@@ -214,5 +199,19 @@ class ShoppingListServiceImpl(
         val shoppingList: ShoppingListResponse = this.getShoppingListById(listId, appUser)
         return shoppingList.shoppingListItems?.first { it.id == listItemId }
             ?: throw BadRequestException("Shopping list item with ID: $listItemId does not exist!")
+    }
+
+    private fun fetchShoppingLists(appUser: AppUser, isDone: Boolean?): List<ShoppingList> {
+        return if (isDone != null) {
+            repository.findAllByUserAndIsDone(appUser, isDone) ?: emptyList()
+        } else {
+            repository.findAllByUser(appUser) ?: emptyList()
+        }
+    }
+
+    private fun mapToShoppingListResponse(shoppingList: ShoppingList): ShoppingListResponse {
+        val supermarketResponse = shoppingList.supermarket?.let(supermarketMapper::toDto) ?: SupermarketResponse()
+        val shoppingListItems = shoppingList.shoppingListItems.map(shoppingListItemMapper::toDto)
+        return shoppingListMapper.toDto(shoppingList, supermarketResponse, shoppingListItems)
     }
 }
