@@ -37,22 +37,12 @@ class ShoppingListServiceImpl(
 
     @Transactional
     override fun createShoppingList(createRequest: ShoppingListCreateRequest, appUser: AppUser): ShoppingListResponse {
-        if (createRequest.shoppingListItems.isEmpty()) {
-            throw BadRequestException("A shopping list must have at least one item")
-        }
-
-        var shoppingListItems: List<ShoppingListItem> = createRequest.shoppingListItems.map {
-            shoppingListItemService.createShoppingListItem(it, null)
-        }
-        val supermarket: Supermarket = supermarketService.findSupermarketByName(createRequest.supermarket.name)
-        val shoppingList: ShoppingList =
-            shoppingListMapper.toEntity(createRequest, supermarket, shoppingListItems, appUser)
-        val entity: ShoppingList = repository.save(shoppingList)
-        shoppingListItems = shoppingListItemService.updateShoppingList(shoppingList, shoppingListItems)
-
-        return generateShoppingListResponse(supermarket, shoppingListItems, entity)
+        validateRequest(createRequest)
+        val supermarket = supermarketService.findSupermarketByName(createRequest.supermarket.name)
+        val shoppingList = createAndSaveShoppingList(createRequest, supermarket, appUser)
+        val shoppingListItems = createAndAttachShoppingListItems(createRequest, shoppingList)
+        return generateShoppingListResponse(supermarket, shoppingListItems, shoppingList)
     }
-
 
     override fun getShoppingListById(id: Long, appUser: AppUser): ShoppingListResponse {
         val shoppingList: ShoppingList = validateShoppingList(id, appUser)
@@ -189,6 +179,31 @@ class ShoppingListServiceImpl(
             }
         }
         return shoppingListResponse
+    }
+
+    private fun validateRequest(createRequest: ShoppingListCreateRequest) {
+        if (createRequest.shoppingListItems.isEmpty()) {
+            throw BadRequestException("A shopping list must have at least one item")
+        }
+    }
+
+    private fun createAndSaveShoppingList(
+        createRequest: ShoppingListCreateRequest,
+        supermarket: Supermarket,
+        appUser: AppUser
+    ): ShoppingList {
+        val shoppingList = shoppingListMapper.toEntity(createRequest, supermarket, emptyList(), appUser)
+        return repository.save(shoppingList)
+    }
+
+    private fun createAndAttachShoppingListItems(
+        createRequest: ShoppingListCreateRequest,
+        shoppingList: ShoppingList
+    ): List<ShoppingListItem> {
+        val shoppingListItems = createRequest.shoppingListItems.map {
+            shoppingListItemService.createShoppingListItem(it, shoppingList)
+        }
+        return shoppingListItemService.updateShoppingList(shoppingList, shoppingListItems)
     }
 
     private fun retrieveListItemResponse(

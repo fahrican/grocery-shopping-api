@@ -81,6 +81,7 @@ class ShoppingListServiceImplTest {
         val actualResult: ShoppingListResponse = objectUnderTest.createShoppingList(createRequest, appUser)
 
         // assert
+        assertEquals(shoppingListItems.size, actualResult.shoppingListItems?.size)
         assertEquals(supermarket.name, actualResult.supermarket?.name)
         assertEquals(false, actualResult.isDone)
         assertEquals(10.0f, actualResult.totalAmount)
