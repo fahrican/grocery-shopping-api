@@ -250,4 +250,18 @@ class ShoppingListServiceImplTest {
         verify { mockSupermarketService.findSupermarketByName(any()) wasNot called }
         verify { mockRepository.save(any()) }
     }
+
+    @Test
+    fun `when delete shopping list is called with one saved shopping list then expect repository to be empty`() {
+        val shoppingLists = mutableListOf(shoppingList)
+        mockRepository.saveAll(shoppingLists)
+        every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
+        every { mockShoppingListItemService.deleteShoppingListItems(any()) } returns Unit
+
+        objectUnderTest.deleteShoppingList(id, appUser)
+
+        assertEquals(0, mockRepository.findAll().size)
+        verify { mockRepository.findByIdAndUser(any(), any()) }
+        verify { mockShoppingListItemService.deleteShoppingListItems(any()) }
+    }
 }
