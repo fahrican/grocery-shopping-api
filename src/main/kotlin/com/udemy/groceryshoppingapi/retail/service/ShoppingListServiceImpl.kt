@@ -2,6 +2,7 @@ package com.udemy.groceryshoppingapi.retail.service
 
 import com.udemy.groceryshoppingapi.dto.GroceryItemResponse
 import com.udemy.groceryshoppingapi.dto.GroceryItemUpdateRequest
+import com.udemy.groceryshoppingapi.dto.Hypermarket
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemResponse
@@ -66,9 +67,10 @@ class ShoppingListServiceImpl(
         appUser: AppUser
     ): ShoppingListResponse {
         val shoppingList = validateShoppingList(id, appUser)
-        var updatedSupermarket: Supermarket? = null
-        if (updateRequest.supermarket != null) {
-            updatedSupermarket = updateRequest.supermarket.name?.let { supermarketService.findSupermarketByName(it) }
+        val updatedSupermarket: Supermarket? = if (updateRequest.supermarket != null) {
+            updateRequest.supermarket.market?.let { supermarketService.findSupermarketByName(it) }
+        } else {
+            shoppingList.supermarket ?: Supermarket(name = Hypermarket.OTHER)
         }
         shoppingList.apply {
             receiptPictureUrl = updateRequest.receiptPictureUrl ?: receiptPictureUrl
@@ -76,7 +78,7 @@ class ShoppingListServiceImpl(
             supermarket = updatedSupermarket ?: supermarket
         }
         val entity: ShoppingList = repository.save(shoppingList)
-        return generateShoppingListResponse(shoppingList.supermarket!!, shoppingList.shoppingListItems, entity)
+        return generateShoppingListResponse(updatedSupermarket!!, shoppingList.shoppingListItems, entity)
     }
 
     @Transactional

@@ -222,7 +222,7 @@ class ShoppingListServiceImplTest {
 
         assertEquals(updateRequest.receiptPictureUrl, actualResult.receiptPictureUrl)
         assertEquals(updateRequest.isDone, actualResult.isDone)
-        //assertEquals(updateRequest.supermarket?.name, actualResult.supermarket?.market?.name)
+        assertEquals(updateRequest.supermarket?.market?.value, actualResult.supermarket?.market?.value)
         verify { mockSupermarketService.findSupermarketByName(any()) }
         verify { mockRepository.save(any()) }
     }
