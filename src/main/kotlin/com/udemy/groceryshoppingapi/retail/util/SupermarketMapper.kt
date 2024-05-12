@@ -11,13 +11,13 @@ class SupermarketMapper {
     fun toDto(entity: Supermarket): SupermarketResponse {
         return SupermarketResponse(
             id = entity.id,
-            name = entity.name
+            market = entity.name
         )
     }
 
     fun toEntity(dto: SupermarketCreateRequest): Supermarket {
         return Supermarket(
-            name = dto.name
+            name = dto.market
         )
     }
 }

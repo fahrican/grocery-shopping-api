@@ -6,7 +6,9 @@ import com.udemy.groceryshoppingapi.dto.Hypermarket
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
+import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
 import com.udemy.groceryshoppingapi.dto.SupermarketCreateRequest
+import com.udemy.groceryshoppingapi.dto.SupermarketUpdateRequest
 import com.udemy.groceryshoppingapi.error.BadRequestException
 import com.udemy.groceryshoppingapi.error.ShoppingListNotFoundException
 import com.udemy.groceryshoppingapi.error.SupermarketException
@@ -95,7 +97,7 @@ class ShoppingListServiceImplTest {
 
         // assert
         assertEquals(shoppingListItems.size, actualResult.shoppingListItems?.size)
-        assertEquals(supermarket.name, actualResult.supermarket?.name)
+        assertEquals(supermarket.name, actualResult.supermarket?.market)
         assertEquals(false, actualResult.isDone)
         assertEquals(10.0f, actualResult.totalAmount)
         assertEquals(null, actualResult.receiptPictureUrl)
@@ -127,7 +129,7 @@ class ShoppingListServiceImplTest {
         val actualResult: ShoppingListResponse = objectUnderTest.getShoppingListById(id, appUser)
 
         assertEquals(shoppingList.shoppingListItems.size, actualResult.shoppingListItems?.size)
-        assertEquals(shoppingList.supermarket?.name, actualResult.supermarket?.name)
+        assertEquals(shoppingList.supermarket?.name, actualResult.supermarket?.market)
         assertEquals(shoppingList.isDone, actualResult.isDone)
         assertEquals(shoppingList.receiptPictureUrl, actualResult.receiptPictureUrl)
         verify { mockRepository.findByIdAndUser(any(), any()) }
@@ -164,7 +166,7 @@ class ShoppingListServiceImplTest {
         assertEquals(shoppingLists.size, actualResult.size)
         assertEquals(shoppingLists.first().isDone, actualResult.first().isDone)
         assertEquals(shoppingLists.first().receiptPictureUrl, actualResult.first().receiptPictureUrl)
-        assertEquals(shoppingLists.first().supermarket?.name, actualResult.first().supermarket?.name)
+        assertEquals(shoppingLists.first().supermarket?.name, actualResult.first().supermarket?.market)
         assertEquals(shoppingLists.first().shoppingListItems.size, actualResult.first().shoppingListItems?.size)
         assertEquals(shoppingLists.first().getTotalAmount(), actualResult.first().totalAmount)
         verify { mockRepository.findAllByUser(any()) }
@@ -192,9 +194,36 @@ class ShoppingListServiceImplTest {
         assertEquals(shoppingLists.size, actualResult.size)
         assertEquals(shoppingLists.first().isDone, actualResult.first().isDone)
         assertEquals(shoppingLists.first().receiptPictureUrl, actualResult.first().receiptPictureUrl)
-        assertEquals(shoppingLists.first().supermarket?.name, actualResult.first().supermarket?.name)
+        assertEquals(shoppingLists.first().supermarket?.name, actualResult.first().supermarket?.market)
         assertEquals(shoppingLists.first().shoppingListItems.size, actualResult.first().shoppingListItems?.size)
         assertEquals(shoppingLists.first().getTotalAmount(), actualResult.first().totalAmount)
         verify { mockRepository.findAllByUserAndIsDone(any(), any()) }
+    }
+
+    @Test
+    fun `when updateShoppingList is called then`() {
+        val etsan = Supermarket(name = Hypermarket.ETSAN)
+        val updateRequest = ShoppingListUpdateRequest(
+            receiptPictureUrl = "https://example.com/new_receipt.jpg",
+            isDone = true,
+            supermarket = SupermarketUpdateRequest(etsan.name)
+        )
+        val expectedShoppingList = ShoppingList(
+            id = id,
+            appUser = appUser,
+            receiptPictureUrl = updateRequest.receiptPictureUrl,
+            isDone = updateRequest.isDone!!,
+            supermarket = etsan
+        )
+        every { mockSupermarketService.findSupermarketByName(any()) } returns etsan
+        every { mockRepository.save(any()) } returns expectedShoppingList
+
+        val actualResult: ShoppingListResponse = objectUnderTest.updateShoppingList(id, updateRequest, appUser)
+
+        assertEquals(updateRequest.receiptPictureUrl, actualResult.receiptPictureUrl)
+        assertEquals(updateRequest.isDone, actualResult.isDone)
+        //assertEquals(updateRequest.supermarket?.name, actualResult.supermarket?.market?.name)
+        verify { mockSupermarketService.findSupermarketByName(any()) }
+        verify { mockRepository.save(any()) }
     }
 }

@@ -38,7 +38,7 @@ class ShoppingListServiceImpl(
     @Transactional
     override fun createShoppingList(createRequest: ShoppingListCreateRequest, appUser: AppUser): ShoppingListResponse {
         validateRequest(createRequest)
-        val supermarket = supermarketService.findSupermarketByName(createRequest.supermarket.name)
+        val supermarket = supermarketService.findSupermarketByName(createRequest.supermarket.market)
         val shoppingList = createAndSaveShoppingList(createRequest, supermarket, appUser)
         val shoppingListItems = createAndAttachShoppingListItems(createRequest, shoppingList)
         return generateShoppingListResponse(supermarket, shoppingListItems, shoppingList)

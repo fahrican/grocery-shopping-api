@@ -26,7 +26,7 @@ class ShoppingListMapperTest {
             shoppingListItems = listOf(),
             appUser = AppUser()
         )
-        val supermarketResponse = SupermarketResponse(id = 1, name = Hypermarket.BILLA)
+        val supermarketResponse = SupermarketResponse(id = 1, market = Hypermarket.BILLA)
         val shoppingListItemsResponse = listOf<ShoppingListItemResponse>()
 
         val dto = objectUnderTest.toDto(shoppingList, supermarketResponse, shoppingListItemsResponse)
@@ -43,7 +43,7 @@ class ShoppingListMapperTest {
     fun `when to entity is called then expect the fields match`() {
         val request = ShoppingListCreateRequest(
             receiptPictureUrl = "http://example.com/new_receipt.jpg",
-            supermarket = SupermarketCreateRequest(name = Hypermarket.SPAR),
+            supermarket = SupermarketCreateRequest(market = Hypermarket.SPAR),
             shoppingListItems = listOf()
         )
         val supermarket = Supermarket(name = Hypermarket.SPAR)

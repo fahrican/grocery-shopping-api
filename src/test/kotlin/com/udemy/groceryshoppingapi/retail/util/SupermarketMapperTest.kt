@@ -17,15 +17,15 @@ class SupermarketMapperTest {
         val dto = objectUnderTest.toDto(supermarket)
 
         assertEquals(supermarket.id, dto.id)
-        assertEquals(supermarket.name, dto.name)
+        assertEquals(supermarket.name, dto.market)
     }
 
     @Test
     fun `when to entity is called then expect the fields match`() {
-        val createRequest = SupermarketCreateRequest(name = Hypermarket.SPAR)
+        val createRequest = SupermarketCreateRequest(market = Hypermarket.SPAR)
 
         val entity = objectUnderTest.toEntity(createRequest)
 
-        assertEquals(createRequest.name, entity.name)
+        assertEquals(createRequest.market, entity.name)
     }
 }

@@ -784,14 +784,14 @@ components:
           type: integer
           format: int64
           description: Unique identifier for the Supermarket
-        name:
+        market:
           $ref: '#/components/schemas/Hypermarket'
     SupermarketCreateRequest:
       required:
-        - name
+        - market
       type: object
       properties:
-        name:
+        market:
           $ref: '#/components/schemas/Hypermarket'
     SupermarketUpdateRequest:
       type: object
