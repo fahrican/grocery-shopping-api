@@ -796,7 +796,7 @@ components:
     SupermarketUpdateRequest:
       type: object
       properties:
-        name:
+        market:
           $ref: '#/components/schemas/Hypermarket'
     Category:
       type: string
