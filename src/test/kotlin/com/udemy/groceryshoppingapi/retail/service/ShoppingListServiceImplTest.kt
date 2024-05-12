@@ -8,6 +8,7 @@ import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.dto.SupermarketCreateRequest
 import com.udemy.groceryshoppingapi.error.BadRequestException
+import com.udemy.groceryshoppingapi.error.SupermarketException
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
 import com.udemy.groceryshoppingapi.retail.entity.Supermarket
@@ -16,6 +17,7 @@ import com.udemy.groceryshoppingapi.retail.util.ShoppingListItemMapper
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListMapper
 import com.udemy.groceryshoppingapi.retail.util.SupermarketMapper
 import com.udemy.groceryshoppingapi.user.entity.AppUser
+import io.mockk.called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -49,15 +51,17 @@ class ShoppingListServiceImplTest {
         mockGroceryItemService
     )
 
+    private val appUser = AppUser()
+    private val supermarket = Supermarket(name = Hypermarket.HOFER)
+    private val shoppingListItem = ShoppingListItem(quantity = 5, price = 10.0F)
+    private val id = 1L
+
     @Test
     fun `when create shopping list is called then expect shopping list got created`() {
         // assign
-        val appUser = AppUser()
-        val supermarket = Supermarket(name = Hypermarket.HOFER)
-        val shoppingListItem = ShoppingListItem(quantity = 5, price = 10.0F)
         val shoppingListItemCreateRequest = ShoppingListItemCreateRequest(
-            quantity = 5,
-            price = 10.0F,
+            quantity = shoppingListItem.quantity,
+            price = shoppingListItem.price,
             groceryItem = GroceryItemCreateRequest(name = "Milk", category = Category.DAIRY)
         )
         val createRequest = ShoppingListCreateRequest(
@@ -103,6 +107,45 @@ class ShoppingListServiceImplTest {
             assertThrows<BadRequestException> { objectUnderTest.createShoppingList(createRequest, appUser) }
 
         assertEquals("A shopping list must have at least one item", actualResult.message)
+        verify { mockShoppingListItemService.createShoppingListItem(any(), any()) wasNot called }
+        verify { mockSupermarketService.findSupermarketByName(any()) wasNot called }
     }
 
+    @Test
+    fun `when shopping list by id is called then check for response properties`() {
+        val shoppingList = ShoppingList(
+            id = id,
+            receiptPictureUrl = null,
+            isDone = false,
+            appUser = appUser,
+            supermarket = supermarket,
+            shoppingListItems = mutableListOf(shoppingListItem)
+        )
+        every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
+
+        val actualResult: ShoppingListResponse = objectUnderTest.getShoppingListById(id, appUser)
+
+        assertEquals(shoppingList.shoppingListItems.size, actualResult.shoppingListItems?.size)
+        assertEquals(shoppingList.supermarket?.name, actualResult.supermarket?.name)
+        assertEquals(shoppingList.isDone, actualResult.isDone)
+        assertEquals(shoppingList.receiptPictureUrl, actualResult.receiptPictureUrl)
+        verify { mockRepository.findByIdAndUser(any(), any()) }
+    }
+
+    @Test
+    fun `when shopping list by id is called then expect exception case`() {
+        val shoppingList = ShoppingList(
+            id = id,
+            receiptPictureUrl = null,
+            isDone = false,
+            appUser = appUser,
+            supermarket = null,
+            shoppingListItems = mutableListOf(shoppingListItem)
+        )
+        every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
+
+        val actualResult = assertThrows<SupermarketException> { objectUnderTest.getShoppingListById(id, appUser) }
+
+        assertEquals("There is no supermarket associated with this shopping list!", actualResult.message)
+    }
 }
