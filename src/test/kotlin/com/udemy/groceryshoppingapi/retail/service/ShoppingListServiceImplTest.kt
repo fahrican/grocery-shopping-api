@@ -8,6 +8,7 @@ import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.dto.SupermarketCreateRequest
 import com.udemy.groceryshoppingapi.error.BadRequestException
+import com.udemy.groceryshoppingapi.error.ShoppingListNotFoundException
 import com.udemy.groceryshoppingapi.error.SupermarketException
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
@@ -133,7 +134,7 @@ class ShoppingListServiceImplTest {
     }
 
     @Test
-    fun `when shopping list by id is called then expect exception case`() {
+    fun `when shopping list by id is called then expect supermarket exception`() {
         val shoppingList = ShoppingList(
             id = id,
             receiptPictureUrl = null,
@@ -147,5 +148,15 @@ class ShoppingListServiceImplTest {
         val actualResult = assertThrows<SupermarketException> { objectUnderTest.getShoppingListById(id, appUser) }
 
         assertEquals("There is no supermarket associated with this shopping list!", actualResult.message)
+    }
+
+    @Test
+    fun `when shopping list by id is called then expect shopping list not found exception`() {
+        every { mockRepository.findByIdAndUser(any(), any()) } returns null
+
+        val actualResult =
+            assertThrows<ShoppingListNotFoundException> { objectUnderTest.getShoppingListById(id, appUser) }
+
+        assertEquals("Shopping list with ID: $id does not exist!", actualResult.message)
     }
 }
