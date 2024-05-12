@@ -201,7 +201,7 @@ class ShoppingListServiceImplTest {
     }
 
     @Test
-    fun `when updateShoppingList is called then`() {
+    fun `when update shopping list is called then check for the updated properties`() {
         val etsan = Supermarket(name = Hypermarket.ETSAN)
         val updateRequest = ShoppingListUpdateRequest(
             receiptPictureUrl = "https://example.com/new_receipt.jpg",
@@ -224,6 +224,30 @@ class ShoppingListServiceImplTest {
         assertEquals(updateRequest.isDone, actualResult.isDone)
         assertEquals(updateRequest.supermarket?.market?.value, actualResult.supermarket?.market?.value)
         verify { mockSupermarketService.findSupermarketByName(any()) }
+        verify { mockRepository.save(any()) }
+    }
+
+    @Test
+    fun `when update shopping list is called with supermarket null then check for the updated properties`() {
+        val updateRequest = ShoppingListUpdateRequest(
+            receiptPictureUrl = "https://example.com/new_receipt.jpg",
+            isDone = true,
+            supermarket = null
+        )
+        val expectedShoppingList = ShoppingList(
+            id = id,
+            appUser = appUser,
+            receiptPictureUrl = updateRequest.receiptPictureUrl,
+            isDone = updateRequest.isDone!!,
+            supermarket = null
+        )
+        every { mockRepository.save(any()) } returns expectedShoppingList
+
+        val actualResult: ShoppingListResponse = objectUnderTest.updateShoppingList(id, updateRequest, appUser)
+
+        assertEquals(updateRequest.receiptPictureUrl, actualResult.receiptPictureUrl)
+        assertEquals(updateRequest.isDone, actualResult.isDone)
+        verify { mockSupermarketService.findSupermarketByName(any()) wasNot called }
         verify { mockRepository.save(any()) }
     }
 }
