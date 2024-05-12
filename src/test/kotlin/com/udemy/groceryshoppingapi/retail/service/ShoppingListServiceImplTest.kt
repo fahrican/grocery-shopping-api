@@ -122,7 +122,6 @@ class ShoppingListServiceImplTest {
 
     @Test
     fun `when shopping list by id is called then check for response properties`() {
-
         every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
 
         val actualResult: ShoppingListResponse = objectUnderTest.getShoppingListById(id, appUser)
@@ -136,14 +135,7 @@ class ShoppingListServiceImplTest {
 
     @Test
     fun `when shopping list by id is called then expect supermarket exception`() {
-        val shoppingList = ShoppingList(
-            id = id,
-            receiptPictureUrl = null,
-            isDone = false,
-            appUser = appUser,
-            supermarket = null,
-            shoppingListItems = mutableListOf(shoppingListItem)
-        )
+        shoppingList.supermarket = null
         every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
 
         val actualResult = assertThrows<SupermarketException> { objectUnderTest.getShoppingListById(id, appUser) }
