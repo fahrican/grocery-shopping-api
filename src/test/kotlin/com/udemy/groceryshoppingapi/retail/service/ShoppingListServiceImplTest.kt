@@ -7,6 +7,7 @@ import com.udemy.groceryshoppingapi.dto.GroceryItemUpdateRequest
 import com.udemy.groceryshoppingapi.dto.Hypermarket
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
+import com.udemy.groceryshoppingapi.dto.ShoppingListItemResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
 import com.udemy.groceryshoppingapi.dto.SupermarketCreateRequest
@@ -277,5 +278,23 @@ class ShoppingListServiceImplTest {
 
         assertEquals(groceryItemResponse, actualResult)
         verify { mockGroceryItemService.updateGroceryItem(any(), any()) }
+    }
+
+    @Test
+    fun `when get shopping list items is called then check for the result`() {
+        // assign
+        val shoppingLists: List<ShoppingList> = mutableListOf(shoppingList)
+        mockRepository.saveAll(shoppingLists)
+        every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
+        val listItemResponse: ShoppingListItemResponse = mockShoppingListItemMapper.toDto(shoppingListItem)
+        val expectedResponse: Set<ShoppingListItemResponse> = setOf(listItemResponse)
+
+        // act
+        val actualResult: Set<ShoppingListItemResponse> = objectUnderTest.getShoppingListItems(id, appUser)
+
+        // assert
+        assertEquals(expectedResponse.size, actualResult.size)
+        assertEquals(expectedResponse, actualResult)
+        verify { mockRepository.findByIdAndUser(any(), any()) }
     }
 }
