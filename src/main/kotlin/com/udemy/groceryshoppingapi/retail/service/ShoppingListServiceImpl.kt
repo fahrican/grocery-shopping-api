@@ -90,8 +90,7 @@ class ShoppingListServiceImpl(
 
     override fun getGroceryItem(listId: Long, listItemId: Long, appUser: AppUser): GroceryItemResponse {
         val shoppingListItem: ShoppingListItemResponse = retrieveListItemResponse(listId, appUser, listItemId)
-        val groceryItem: GroceryItemResponse = shoppingListItem.groceryItem
-        return groceryItem
+        return shoppingListItem.groceryItem
     }
 
     override fun updateGroceryItem(groceryId: Long, updateRequest: GroceryItemUpdateRequest): GroceryItemResponse {
