@@ -2,6 +2,8 @@ package com.udemy.groceryshoppingapi.retail.service
 
 import com.udemy.groceryshoppingapi.dto.Category
 import com.udemy.groceryshoppingapi.dto.GroceryItemCreateRequest
+import com.udemy.groceryshoppingapi.dto.GroceryItemResponse
+import com.udemy.groceryshoppingapi.dto.GroceryItemUpdateRequest
 import com.udemy.groceryshoppingapi.dto.Hypermarket
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
@@ -263,5 +265,17 @@ class ShoppingListServiceImplTest {
         assertEquals(0, mockRepository.findAll().size)
         verify { mockRepository.findByIdAndUser(any(), any()) }
         verify { mockShoppingListItemService.deleteShoppingListItems(any()) }
+    }
+
+    @Test
+    fun `when update grocery item called then check for response`() {
+        val groceryItemResponse = GroceryItemResponse(id, "Apple", Category.FRUITS)
+        every { mockGroceryItemService.updateGroceryItem(any(), any()) } returns groceryItemResponse
+
+        val actualResult: GroceryItemResponse =
+            objectUnderTest.updateGroceryItem(id, GroceryItemUpdateRequest("Apple", Category.FRUITS))
+
+        assertEquals(groceryItemResponse, actualResult)
+        verify { mockGroceryItemService.updateGroceryItem(any(), any()) }
     }
 }
