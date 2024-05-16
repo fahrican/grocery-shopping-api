@@ -89,7 +89,8 @@ class ShoppingListServiceImpl(
     }
 
     override fun getGroceryItem(listId: Long, listItemId: Long, appUser: AppUser): GroceryItemResponse {
-        val shoppingListItem: ShoppingListItemResponse = retrieveListItemResponse(listId, appUser, listItemId)
+        val shoppingList = this.getShoppingListById(listId, appUser)
+        val shoppingListItem: ShoppingListItemResponse = retrieveListItemResponse(shoppingList, listItemId)
         return shoppingListItem.groceryItem
     }
 
@@ -104,7 +105,8 @@ class ShoppingListServiceImpl(
     }
 
     override fun getShoppingListItem(listId: Long, itemId: Long, appUser: AppUser): ShoppingListItemResponse {
-        return retrieveListItemResponse(listId, appUser, itemId)
+        val shoppingList = this.getShoppingListById(listId, appUser)
+        return retrieveListItemResponse(shoppingList, itemId)
     }
 
     override fun createShoppingListItem(
@@ -193,12 +195,10 @@ class ShoppingListServiceImpl(
     }
 
     private fun retrieveListItemResponse(
-        listId: Long,
-        appUser: AppUser,
+        shoppingList: ShoppingListResponse,
         listItemId: Long
     ): ShoppingListItemResponse {
-        val shoppingList: ShoppingListResponse = this.getShoppingListById(listId, appUser)
-        return shoppingList.shoppingListItems?.first { it.id == listItemId }
+        return shoppingList.shoppingListItems?.firstOrNull { it.id == listItemId }
             ?: throw BadRequestException("Shopping list item with ID: $listItemId does not exist!")
     }
 
