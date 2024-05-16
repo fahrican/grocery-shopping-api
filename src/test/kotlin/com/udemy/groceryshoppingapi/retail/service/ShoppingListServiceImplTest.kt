@@ -297,4 +297,22 @@ class ShoppingListServiceImplTest {
         assertEquals(expectedResponse, actualResult)
         verify { mockRepository.findByIdAndUser(any(), any()) }
     }
+
+    @Test
+    fun `when get grocery item is called then check for the result`() {
+        val groceryItemResponse = GroceryItemResponse(id = 1, name = "Orange", category = Category.FRUITS)
+        every { mockRepository.findByIdAndUser(shoppingList.id, appUser) } returns shoppingList
+        val shoppingListItemResponse = ShoppingListItemResponse(
+            id = shoppingListItem.id,
+            groceryItem = groceryItemResponse,
+            price = 11.20f,
+            quantity = 1
+        )
+        every { mockShoppingListItemMapper.toDto(any()) } returns shoppingListItemResponse
+
+        val actualResult = objectUnderTest.getGroceryItem(shoppingList.id, shoppingListItem.id, appUser)
+
+        assertEquals(groceryItemResponse, actualResult)
+        verify { mockRepository.findByIdAndUser(shoppingList.id, appUser) }
+    }
 }
