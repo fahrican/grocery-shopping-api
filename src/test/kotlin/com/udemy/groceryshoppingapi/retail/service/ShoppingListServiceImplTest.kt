@@ -335,4 +335,23 @@ class ShoppingListServiceImplTest {
         assertEquals(shoppingListItemResponse, actualResult)
         verify { mockRepository.findByIdAndUser(shoppingList.id, appUser) }
     }
+
+    @Test
+    fun `when get shopping list item is called then expect exception`() {
+        val shoppingList = ShoppingList(
+            id = 1,
+            receiptPictureUrl = "https://example.com/receipt.jpg",
+            appUser = appUser,
+            supermarket = supermarket,
+            shoppingListItems = emptyList()
+        )
+        val expectedException = BadRequestException("Shopping list item with ID: 0 does not exist!")
+        every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
+
+        val actualException: BadRequestException =
+            assertThrows { objectUnderTest.getShoppingListItem(shoppingList.id, shoppingListItem.id, appUser) }
+
+        assertEquals(expectedException.message, actualException.message)
+        verify { mockRepository.findByIdAndUser(shoppingList.id, appUser) }
+    }
 }
