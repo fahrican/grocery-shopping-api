@@ -14,6 +14,7 @@ import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
 import com.udemy.groceryshoppingapi.dto.SupermarketCreateRequest
 import com.udemy.groceryshoppingapi.dto.SupermarketUpdateRequest
 import com.udemy.groceryshoppingapi.error.BadRequestException
+import com.udemy.groceryshoppingapi.error.ShoppingListItemNotFoundException
 import com.udemy.groceryshoppingapi.error.ShoppingListNotFoundException
 import com.udemy.groceryshoppingapi.error.SupermarketException
 import com.udemy.groceryshoppingapi.retail.entity.GroceryItem
@@ -420,5 +421,23 @@ class ShoppingListServiceImplTest {
         assertEquals(0, mockShoppingListItemRepository.findAll().size)
         verify { mockRepository.findByIdAndUser(any(), any()) }
         verify { mockShoppingListItemService.deleteShoppingListItem(any()) }
+    }
+
+    @Test
+    fun `when delete shopping list item is called then expect shopping list item not found exception`() {
+        val listId = 1L
+        val itemId = 100L
+        val shoppingList = ShoppingList(id = listId, shoppingListItems = mutableListOf())
+        every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
+
+        val actualResult = assertThrows<ShoppingListItemNotFoundException> {
+            objectUnderTest.deleteShoppingListItem(
+                listId,
+                itemId,
+                appUser
+            )
+        }
+
+        assertEquals("Shopping list item with ID: $itemId does not exist!", actualResult.message)
     }
 }
