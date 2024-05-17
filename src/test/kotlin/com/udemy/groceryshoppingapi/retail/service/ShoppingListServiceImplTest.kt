@@ -20,6 +20,7 @@ import com.udemy.groceryshoppingapi.retail.entity.GroceryItem
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
 import com.udemy.groceryshoppingapi.retail.entity.Supermarket
+import com.udemy.groceryshoppingapi.retail.repository.ShoppingListItemRepository
 import com.udemy.groceryshoppingapi.retail.repository.ShoppingListRepository
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListItemMapper
 import com.udemy.groceryshoppingapi.retail.util.ShoppingListMapper
@@ -406,5 +407,18 @@ class ShoppingListServiceImplTest {
 
         assertEquals(expectedShoppingListItemResponse, actualResult)
         verify { mockShoppingListItemService.updateShoppingListItem(any(), any()) }
+    }
+
+    @Test
+    fun `when delete shopping list item is called then check for result`() {
+        val mockShoppingListItemRepository = mockk<ShoppingListItemRepository>(relaxed = true)
+        every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
+        mockShoppingListItemRepository.saveAll(shoppingList.shoppingListItems)
+
+        objectUnderTest.deleteShoppingListItem(shoppingList.id, 0, appUser)
+
+        assertEquals(0, mockShoppingListItemRepository.findAll().size)
+        verify { mockRepository.findByIdAndUser(any(), any()) }
+        verify { mockShoppingListItemService.deleteShoppingListItem(any()) }
     }
 }
