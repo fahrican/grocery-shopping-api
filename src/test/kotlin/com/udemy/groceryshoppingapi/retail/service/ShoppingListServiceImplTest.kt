@@ -8,6 +8,7 @@ import com.udemy.groceryshoppingapi.dto.Hypermarket
 import com.udemy.groceryshoppingapi.dto.ShoppingListCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemCreateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListItemResponse
+import com.udemy.groceryshoppingapi.dto.ShoppingListItemUpdateRequest
 import com.udemy.groceryshoppingapi.dto.ShoppingListResponse
 import com.udemy.groceryshoppingapi.dto.ShoppingListUpdateRequest
 import com.udemy.groceryshoppingapi.dto.SupermarketCreateRequest
@@ -383,5 +384,27 @@ class ShoppingListServiceImplTest {
         assertEquals(expectedShoppingListItemResponse, actualResult)
         verify { mockRepository.findByIdAndUser(any(), any()) }
         verify { mockShoppingListItemService.createShoppingListItem(any(), any()) }
+    }
+
+    @Test
+    fun `when update shopping list item is called then check for result`() {
+        val listItemUpdateReq = ShoppingListItemUpdateRequest(
+            price = 0.99F,
+            quantity = 3
+        )
+        val expectedShoppingListItemResponse = ShoppingListItemResponse(
+            id = shoppingListItem.id,
+            quantity = listItemUpdateReq.quantity!!,
+            price = listItemUpdateReq.price!!,
+            groceryItem = GroceryItemResponse()
+        )
+        every { mockShoppingListItemService.updateShoppingListItem(any(), any()) } returns shoppingListItem
+        every { mockShoppingListItemMapper.toDto(any()) } returns expectedShoppingListItemResponse
+
+        val actualResult: ShoppingListItemResponse =
+            objectUnderTest.updateShoppingListItem(shoppingList.id, shoppingListItem.id, listItemUpdateReq, appUser)
+
+        assertEquals(expectedShoppingListItemResponse, actualResult)
+        verify { mockShoppingListItemService.updateShoppingListItem(any(), any()) }
     }
 }
