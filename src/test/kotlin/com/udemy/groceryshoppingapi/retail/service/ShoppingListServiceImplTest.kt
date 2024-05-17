@@ -15,6 +15,7 @@ import com.udemy.groceryshoppingapi.dto.SupermarketUpdateRequest
 import com.udemy.groceryshoppingapi.error.BadRequestException
 import com.udemy.groceryshoppingapi.error.ShoppingListNotFoundException
 import com.udemy.groceryshoppingapi.error.SupermarketException
+import com.udemy.groceryshoppingapi.retail.entity.GroceryItem
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingList
 import com.udemy.groceryshoppingapi.retail.entity.ShoppingListItem
 import com.udemy.groceryshoppingapi.retail.entity.Supermarket
@@ -353,5 +354,34 @@ class ShoppingListServiceImplTest {
 
         assertEquals(expectedException.message, actualException.message)
         verify { mockRepository.findByIdAndUser(shoppingList.id, appUser) }
+    }
+
+    @Test
+    fun `when create shopping list item is called then check for result`() {
+        shoppingListItem.groceryItem = GroceryItem(name = "Hummus", category = Category.OTHER)
+        val listItemCreateReq = ShoppingListItemCreateRequest(
+            price = shoppingListItem.price,
+            quantity = shoppingListItem.quantity,
+            groceryItem = GroceryItemCreateRequest(
+                name = shoppingListItem.groceryItem!!.name,
+                category = shoppingListItem.groceryItem!!.category
+            )
+        )
+        val expectedShoppingListItemResponse = ShoppingListItemResponse(
+            id = shoppingListItem.id,
+            quantity = shoppingListItem.quantity,
+            price = shoppingListItem.price,
+            groceryItem = GroceryItemResponse()
+        )
+        every { mockRepository.findByIdAndUser(any(), any()) } returns shoppingList
+        every { mockShoppingListItemService.createShoppingListItem(any(), any()) } returns shoppingListItem
+        every { mockShoppingListItemMapper.toDto(any()) } returns expectedShoppingListItemResponse
+
+        val actualResult: ShoppingListItemResponse =
+            objectUnderTest.createShoppingListItem(shoppingList.id, listItemCreateReq, appUser)
+
+        assertEquals(expectedShoppingListItemResponse, actualResult)
+        verify { mockRepository.findByIdAndUser(any(), any()) }
+        verify { mockShoppingListItemService.createShoppingListItem(any(), any()) }
     }
 }
