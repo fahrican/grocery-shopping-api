@@ -95,6 +95,16 @@ internal class AppUserServiceImplTest {
     }
 
     @Test
+    fun `when validate email is called then expect an bad request exception1`() {
+        val user = AppUser(id = 3)
+        every { mockRepository.findByEmail(any()) } returns user
+
+        objectUnderTest.validateEmail("test@email.com", user.id)
+
+        verify(exactly = 1) { mockRepository.findByEmail(any()) }
+    }
+
+    @Test
     fun `when change username gets triggered then expect invalid username exception`() {
         request["username"] = "test@"
 
