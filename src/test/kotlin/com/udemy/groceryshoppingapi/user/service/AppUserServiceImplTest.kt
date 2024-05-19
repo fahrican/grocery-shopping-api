@@ -85,6 +85,16 @@ internal class AppUserServiceImplTest {
     }
 
     @Test
+    fun `when validate email is called then expect an bad request exception`() {
+        val expectedException = BadRequestException("Email is already used by another user")
+
+        val exception = assertThrows<BadRequestException> { objectUnderTest.validateEmail("test@email.com") }
+
+        assertEquals(expectedException.message, exception.message)
+        verify(exactly = 1) { mockRepository.findByEmail(any()) }
+    }
+
+    @Test
     fun `when change username gets triggered then expect invalid username exception`() {
         request["username"] = "test@"
 
