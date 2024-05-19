@@ -15,6 +15,7 @@ class ShoppingListController(
     private val service: ShoppingListService,
     private val userProvider: ClientSessionService
 ) : ShoppingListResource {
+
     override fun createShoppingList(shoppingListCreateRequest: ShoppingListCreateRequest): ResponseEntity<ShoppingListResponse> {
         val shoppingList = service.createShoppingList(shoppingListCreateRequest, userProvider.getAuthenticatedUser())
         return ResponseEntity(shoppingList, HttpStatus.CREATED)
