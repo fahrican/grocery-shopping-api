@@ -1,10 +1,11 @@
-## grocer shopping RESTful API
+## Grocery shopping RESTful API
 
-API for planning grocery shopping
+This application is designed to expose a set of RESTful endpoints to manage grocery shopping, It serves as the backend
+component for other web or mobile applications.
 
-### db schema
+### Database schema
 
-The database schema from *dbdiagramm.io*
+The database schema from **dbdiagramm.io**
 
 Table app_user {
 id integer [primary key]
@@ -51,3 +52,20 @@ shopping_list_id int [ref: > shopping_list.id]
 grocery_item_id int [ref: > grocery_item.id]
 }
 
+### Setup
+
+Before starting the project run the following command in the terminal:
+
+```
+./gradlew clean build openApiGenerate
+```
+
+Or just run:
+
+```
+./gradlew openApiGenerate
+```
+
+### Swagger UI
+
+http://localhost:9000/api/swagger-ui/index.html
